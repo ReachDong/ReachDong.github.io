@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title><![CDATA[GNGN_compile]]></title>
+    <title><![CDATA[安装GN环境流程与命令]]></title>
     <url>%2F2020%2F09%2F12%2FGNGN-compile%2F</url>
     <content type="text"><![CDATA[GN工具安装的命令介绍 GN工具的安装命令如下12345678910111213141516171819202122232425262728293031323334353637383940# 安装C++环境sudo apt-get install gcc# g++安装失败，提示依赖就换源，https://mirrors.tuna.tsinghua.edu.cn/sudo apt-get install g++# 查看安装结果gcc --versiong++ --version################################################################### 安装依赖 re2capt-get install re2cre2c --version #查看安装的版本################################################################## 下载ninjiagit clone https://github.com/ninja-build/ninja.git# 执行编译脚本./configure.py --bootstrap# 放如系统文件夹下sudo cp ./ninja /usr/bin # 查看是否成功ninja --version################################################################## 安装clangsudo apt-get install clang################################################################## 安装gn 可选：https://github.com/timniederhausen/gngit clone https://chromium.googlesource.com/chromium/src/tools/gn# 执行编译脚本./build/gen.py#ninjia 构建 编译结束后，gn程序就在gn/out目录中ninja -C out# 结果复制到系统目录sudo cp ./out/gn /usr/bin# 查看是否成功gn --version1834 (09fffae49)]]></content>
       <categories>
