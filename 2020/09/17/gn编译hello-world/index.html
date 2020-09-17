@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="应用动态规划解决队列问题">
+<meta name="description" content="编译第一个hello,world">
 <meta property="og:type" content="article">
-<meta property="og:title" content="动态规划">
-<meta property="og:url" content="http://yoursite.com/2019/08/06/动态规划/index.html">
+<meta property="og:title" content="gn编译hello_world">
+<meta property="og:url" content="http://yoursite.com/2020/09/17/gn编译hello-world/index.html">
 <meta property="og:site_name" content="ReachD">
-<meta property="og:description" content="应用动态规划解决队列问题">
+<meta property="og:description" content="编译第一个hello,world">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-06T09:26:31.000Z">
+<meta property="og:updated_time" content="2020-09-17T13:34:08.181Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="动态规划">
-<meta name="twitter:description" content="应用动态规划解决队列问题">
+<meta name="twitter:title" content="gn编译hello_world">
+<meta name="twitter:description" content="编译第一个hello,world">
 
 
 
@@ -119,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/08/06/动态规划/">
+  <link rel="canonical" href="http://yoursite.com/2020/09/17/gn编译hello-world/">
 
 
 
 
 
-  <title>动态规划 | ReachD</title>
+  <title>gn编译hello_world | ReachD</title>
   
 
 
@@ -274,7 +274,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/06/动态规划/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/17/gn编译hello-world/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Reach Dong">
@@ -291,7 +291,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">动态规划</h1>
+          <h1 class="post-title" itemprop="name headline">gn编译hello_world</h1>
         
 
         <div class="post-meta">
@@ -303,8 +303,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-06T17:22:36+08:00">
-                2019-08-06
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-17T07:59:37+08:00">
+                2020-09-17
               </time>
             
 
@@ -326,8 +326,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数据结构与算法/" itemprop="url" rel="index">
-                    <span itemprop="name">数据结构与算法</span>
+                  <a href="/categories/GN工具/" itemprop="url" rel="index">
+                    <span itemprop="name">GN工具</span>
                   </a>
                 </span>
 
@@ -363,24 +363,15 @@
       
 
       
-        <p>应用动态规划解决队列问题<br><a id="more"></a></p>
-<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><blockquote>
-<p>计算最少出列多少位同学，使得剩下的同学排成合唱队形说明：N位同学站成一排，音乐老师要请其中的(N-K)位同学出列，使得剩下的K位同学排成合唱队形。<br>合唱队形是指这样的一种队形：设K位同学从左到右依次编号为1，2…，K，他们的身高分别为T1，T2，…，TK，   则他们的身高满足存在i（1&lt;=i&lt;=K）使得T1<t2<......<ti-1<ti>Ti+1&gt;……&gt;TK。<br>你的任务是，已知所有N位同学的身高，计算最少需要几位同学出列，可以使得剩下的同学排成合唱队形。</t2<......<ti-1<ti></p>
-</blockquote>
-<p>示例1</p>
-<blockquote>
-<p>8<br>186 186 150 200 160 130 197 200</p>
-</blockquote>
-<p>输出</p>
-<blockquote>
-<p>4</p>
-</blockquote>
-<h3 id="求解思路"><a href="#求解思路" class="headerlink" title="求解思路"></a>求解思路</h3><ol>
-<li>通过动态规划求解每个字符结尾的最大递增子字符串的长度，</li>
-<li>再反转数组，</li>
-<li>按照 1.步骤再进行一次</li>
-<li>两次叠加最大值减一即为最后队列的长度<br>代码：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; dp(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;input,<span class="keyword">int</span> n)&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; list_(n,<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j=i<span class="number">-1</span>;j&gt;=<span class="number">0</span>;j--)&#123;</span><br><span class="line">                <span class="keyword">if</span>(input[i]&gt;input[j])</span><br><span class="line">                    list_[i]=max(list_[i],list_[j]+<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">return</span> list_;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n;</span><br><span class="line">    <span class="keyword">while</span>(<span class="built_in">cin</span>&gt;&gt;n)&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; input(n);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">            <span class="built_in">cin</span>&gt;&gt;input[i];</span><br><span class="line">        &#125;</span><br><span class="line">     <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; front = dp(input,n);</span><br><span class="line">     reverse(input.begin(),input.end());</span><br><span class="line">     <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; back = dp(input, n);</span><br><span class="line">     <span class="keyword">int</span> max_ = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">            <span class="keyword">int</span> temp =front[i]+back[n-i<span class="number">-1</span>];</span><br><span class="line">             <span class="keyword">if</span>(temp&gt;max_) max_=temp;</span><br><span class="line">     &#125;    </span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;(n-(max_<span class="number">-1</span>))&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">     &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ol>
+        <p>编译第一个hello,world</p>
+<a id="more"></a>
+<h1 id="使用GN-编译第一个hello，world"><a href="#使用GN-编译第一个hello，world" class="headerlink" title="使用GN 编译第一个hello，world"></a>使用GN 编译第一个hello，world</h1><p>创建一个工程目录temp，在工程目录里面创建hellow_world.cpp 文件并完成编写。切换到temp 目录下。</p>
+<p>在工程目录temp下,将下载的gn/文件夹下examples中的配置文件拷贝到当前目录，这个配置文件中包含BUILDCONFIG.gn等文件，属于对当前工程编译环境的设置，是gn编译的基础。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp -rf gn/examples/simple_build/build ./</span><br></pre></td></tr></table></figure>
+<p>在工程目录中创建BUILD.gn文件，用来指定待编译的文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo "executable(\"hello\") &#123; sources = [\"hello_world.cpp\"] &#125;" &gt; BUILD.gn</span><br></pre></td></tr></table></figure>
+<p>通过gn 命令 生成ninja</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">gn gen out/default</span><br><span class="line"><span class="meta">#</span> ninja 编译生成exe</span><br><span class="line">ninja -C out/default -v </span><br><span class="line"><span class="meta">#</span> 运行exe</span><br><span class="line">./out/default/hello_world</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -405,8 +396,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/08/05/build-blog/" rel="next" title="build_blog">
-                <i class="fa fa-chevron-left"></i> build_blog
+              <a href="/2020/09/12/GNGN-compile/" rel="next" title="安装GN环境流程与命令">
+                <i class="fa fa-chevron-left"></i> 安装GN环境流程与命令
               </a>
             
           </div>
@@ -414,10 +405,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/08/07/初步学习EM算法/" rel="prev" title="初步学习EM算法">
-                初步学习EM算法 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -570,7 +557,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题描述"><span class="nav-number">1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求解思路"><span class="nav-number">2.</span> <span class="nav-text">求解思路</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#使用GN-编译第一个hello，world"><span class="nav-number">1.</span> <span class="nav-text">使用GN 编译第一个hello，world</span></a></li></ol></div>
             
 
           </div>

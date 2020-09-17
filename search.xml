@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[gn编译hello_world]]></title>
+    <url>%2F2020%2F09%2F17%2Fgn%E7%BC%96%E8%AF%91hello-world%2F</url>
+    <content type="text"><![CDATA[编译第一个hello,world 使用GN 编译第一个hello，world创建一个工程目录temp，在工程目录里面创建hellow_world.cpp 文件并完成编写。切换到temp 目录下。 在工程目录temp下,将下载的gn/文件夹下examples中的配置文件拷贝到当前目录，这个配置文件中包含BUILDCONFIG.gn等文件，属于对当前工程编译环境的设置，是gn编译的基础。 1cp -rf gn/examples/simple_build/build ./ 在工程目录中创建BUILD.gn文件，用来指定待编译的文件 1echo "executable(\"hello\") &#123; sources = [\"hello_world.cpp\"] &#125;" &gt; BUILD.gn 通过gn 命令 生成ninja 12345gn gen out/default# ninja 编译生成exeninja -C out/default -v # 运行exe./out/default/hello_world]]></content>
+      <categories>
+        <category>GN工具</category>
+      </categories>
+  </entry>
+  <entry>
     <title><![CDATA[安装GN环境流程与命令]]></title>
     <url>%2F2020%2F09%2F12%2FGNGN-compile%2F</url>
     <content type="text"><![CDATA[GN工具安装的命令介绍 GN工具的安装命令如下12345678910111213141516171819202122232425262728293031323334353637383940# 安装C++环境sudo apt-get install gcc# g++安装失败，提示依赖就换源，https://mirrors.tuna.tsinghua.edu.cn/sudo apt-get install g++# 查看安装结果gcc --versiong++ --version################################################################### 安装依赖 re2capt-get install re2cre2c --version #查看安装的版本################################################################## 下载ninjiagit clone https://github.com/ninja-build/ninja.git# 执行编译脚本./configure.py --bootstrap# 放如系统文件夹下sudo cp ./ninja /usr/bin # 查看是否成功ninja --version################################################################## 安装clangsudo apt-get install clang################################################################## 安装gn 可选：https://github.com/timniederhausen/gngit clone https://chromium.googlesource.com/chromium/src/tools/gn# 执行编译脚本./build/gen.py#ninjia 构建 编译结束后，gn程序就在gn/out目录中ninja -C out# 结果复制到系统目录sudo cp ./out/gn /usr/bin# 查看是否成功gn --version1834 (09fffae49)]]></content>
