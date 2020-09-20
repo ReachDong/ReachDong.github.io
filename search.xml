@@ -1,6 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>C++容器</title>
+    <url>/2019/08/05/C-%E5%AE%B9%E5%99%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B0%8F%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<p>关于初学C++容器的的一些方法的简单记录</p>
+<a id="more"></a>
+<h1 id="容器的初始化与索引数据类型："><a href="#容器的初始化与索引数据类型：" class="headerlink" title="容器的初始化与索引数据类型："></a>容器的初始化与索引数据类型：</h1><h2 id="vector初始化"><a href="#vector初始化" class="headerlink" title="vector初始化"></a>vector初始化</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_vec&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;;</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_vec(<span class="number">10</span>,<span class="number">5</span>);<span class="comment">// 初始化10个5</span></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_vec(<span class="number">10</span>); <span class="comment">// 初始化10个位置</span></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;my_sec&#123;my_vec.begin()+<span class="number">2</span>,my_vec.end()<span class="number">-1</span>&#125;; <span class="comment">//通过my_vec进行初始化[2:-1)</span></span><br></pre></td></tr></table></figure>
+<h2 id="map初始化"><a href="#map初始化" class="headerlink" title="map初始化"></a>map初始化</h2> <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">map</span>&lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt; my_map&#123;&#123; , &#125; , &#123; , &#125;&#125;; <span class="comment">//map 存储pair 类型作为元素</span></span><br><span class="line"><span class="comment">// map 与python类似 my_map【】 索引可添加元素</span></span><br></pre></td></tr></table></figure>
+<h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><p>  对于容器的索引，例如vec[index]. index 是unsign类型，类型名字是size_t，<strong>当与int类型进行比较，以及运算是容易出错</strong>。<br>  <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"> <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; ans(<span class="number">10</span>,<span class="number">5</span>);</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_v&#123;ans.begin()+<span class="number">2</span>,ans.end()<span class="number">-5</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//会报错no matching function for call to 'min'   auto anss = min(5,ans.size()); ans.size()不是int类型 转化为int 才能比较。</span></span><br><span class="line"><span class="keyword">auto</span> anss = min(<span class="number">5</span>,ans.size());</span><br></pre></td></tr></table></figure></p>
+<h1 id="容器的增删改查加排序"><a href="#容器的增删改查加排序" class="headerlink" title="容器的增删改查加排序"></a>容器的增删改查加排序</h1><h2 id="添加元素"><a href="#添加元素" class="headerlink" title="添加元素"></a>添加元素</h2><p>  添加数据可以通过容器自带的类似于push_back(), insert()方法；或者inserter() 这样的泛型函数；<br>  <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; vec&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;;</span><br><span class="line"><span class="keyword">auto</span> it = vec.insert(vec.begin()+<span class="number">1</span>, <span class="number">10</span>);  <span class="comment">// 返回的it 是插入位置(10 所在的位置)的迭代器， 在第一个参数（迭代器）前面插入后面参数的内容</span></span><br><span class="line">it = vec.insert(vec.end(), <span class="number">3</span>, <span class="number">4</span>);    <span class="comment">//插入通过构造函数调用后两个参数的返回值（3个4）插入到vec 末尾</span></span><br><span class="line">it = vec.insert(vec.end(),vec2.begin(), vec2.end());   <span class="comment">// 将vec2插入到vec1里, 类似python 里面的extend</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="删除元素"><a href="#删除元素" class="headerlink" title="删除元素"></a>删除元素</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;::iterator  it_1;</span><br><span class="line"><span class="keyword">auto</span> it = vec.erase(it_1); <span class="comment">//删除迭代器所指的元素，返回删除元素位置后一位的迭代器。</span></span><br></pre></td></tr></table></figure>
+<h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><p>可以通过迭代器的解引用*it 进行索引和修改 也可以是下标索引，<strong>map索引的时候可能会添加心的pair</strong></p>
+<h2 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//  对于string vec 调用自己的find 方法</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> it = vec.find(target_val, start_index, end_index);  <span class="comment">// 从索引范围内查找第一个元素 返回元素所在index 若不在则返回比长度大得多的整数</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// find_first_of , find_last_of声明如下</span></span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">const</span> <span class="built_in">string</span>&amp; str, <span class="keyword">size_t</span> pos = npos) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">const</span> <span class="keyword">char</span>* s, <span class="keyword">size_t</span> pos = npos) <span class="keyword">const</span>;</span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">const</span> <span class="keyword">char</span>* s, <span class="keyword">size_t</span> pos, <span class="keyword">size_t</span> n) <span class="keyword">const</span>;</span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">char</span> c, <span class="keyword">size_t</span> pos = npos) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 对于vector 没有find 方法 需要调用 泛型函数 find</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> it = find(vec.begin(), vec.end(), target_val); <span class="comment">// 输入输出均为迭代器；与string index不同</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 对于map 查找可以用find 返回值是key 也可以用count 返回true false;</span></span><br></pre></td></tr></table></figure>
+<h2 id="容器最大值最小值的索引"><a href="#容器最大值最小值的索引" class="headerlink" title="容器最大值最小值的索引"></a>容器最大值最小值的索引</h2><p>通过返回最大或者最小值的迭代器，然后与begin()迭代器做差得到<br><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; v(<span class="number">10</span>);</span><br><span class="line"><span class="keyword">auto</span> it = max_element(v.begin(),v.end());</span><br><span class="line"><span class="keyword">int</span> index = it-v.begin();</span><br></pre></td></tr></table></figure></p>
+<h2 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h2><p>泛型函数sort(it.begin(), it.end(),my_sort);<br><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">sort(numbers.begin(),numbers.end(),my_sort);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">my_sort</span><span class="params">(<span class="keyword">int</span> A, intB)</span></span>&#123;</span><br><span class="line"><span class="keyword">return</span> A&lt;B;<span class="comment">//A靠前</span></span><br><span class="line">&#125;</span><br><span class="line">my_sort函数为成员函数时（成员函数默认第一个参数是*<span class="keyword">this</span>） 需要加<span class="keyword">static</span> 作为一般函数（没有<span class="keyword">this</span>参数）是不需要</span><br></pre></td></tr></table></figure></p>
+<h1 id="容器的泛型函数"><a href="#容器的泛型函数" class="headerlink" title="容器的泛型函数"></a>容器的泛型函数</h1><h2 id="反转"><a href="#反转" class="headerlink" title="反转"></a>反转</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; arrayRever&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;;</span><br><span class="line">reverse(arrayRever.begin(),arrayRever.end()); <span class="comment">//没有返回值 就地反转</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; vec (arrayRever.rbegin(), arrayRever.rend()); <span class="comment">// 初始化反转</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>安装GN环境流程与命令</title>
+    <url>/2020/09/12/GNGN-compile/</url>
+    <content><![CDATA[<p>GN工具安装的命令介绍<br><a id="more"></a></p>
+<h1 id="GN工具的安装"><a href="#GN工具的安装" class="headerlink" title="GN工具的安装"></a>GN工具的安装</h1><h2 id="命令如下"><a href="#命令如下" class="headerlink" title="命令如下"></a>命令如下</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span> 安装C++环境</span><br><span class="line">sudo apt-get install gcc</span><br><span class="line"><span class="meta">#</span> g++安装失败，提示依赖就换源，https://mirrors.tuna.tsinghua.edu.cn/</span><br><span class="line">sudo apt-get install g++</span><br><span class="line"><span class="meta">#</span> 查看安装结果</span><br><span class="line">gcc --version</span><br><span class="line">g++ --version</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span>#################################################################</span><br><span class="line"><span class="meta">#</span> 安装依赖 re2c</span><br><span class="line">apt-get install re2c</span><br><span class="line">re</span><br><span class="line">2c --version  #查看安装的版本</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span>################################################################</span><br><span class="line"><span class="meta">#</span> 下载ninjia</span><br><span class="line">git clone https://github.com/ninja-build/ninja.git</span><br><span class="line"><span class="meta">#</span> 执行编译脚本</span><br><span class="line">./configure.py --bootstrap</span><br><span class="line"><span class="meta">#</span> 放如系统文件夹下</span><br><span class="line">sudo cp ./ninja  /usr/bin </span><br><span class="line"><span class="meta">#</span> 查看是否成功</span><br><span class="line">ninja --version</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span>################################################################</span><br><span class="line"><span class="meta">#</span> 安装clang</span><br><span class="line">sudo apt-get install clang</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span>################################################################</span><br><span class="line"><span class="meta">#</span> 安装gn  可选：https://github.com/timniederhausen/gn</span><br><span class="line">git clone https://chromium.googlesource.com/chromium/src/tools/gn</span><br><span class="line"><span class="meta">#</span> 执行编译脚本</span><br><span class="line">./build/gen.py</span><br><span class="line"><span class="meta">#</span>ninjia  构建  编译结束后，gn程序就在gn/out目录中</span><br><span class="line">ninja -C out</span><br><span class="line"><span class="meta">#</span> 结果复制到系统目录</span><br><span class="line">sudo cp ./out/gn /usr/bin</span><br><span class="line"><span class="meta">#</span> 查看是否成功</span><br><span class="line">gn --version</span><br><span class="line">1834 (09fffae49)</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>GN工具</category>
+      </categories>
+  </entry>
+  <entry>
     <title>C—的小问题</title>
     <url>/2019/08/05/C-%E9%81%87%E8%A7%81%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<p>介绍了 string 与char int char* 的转化，for 枚举类型，和INT_MAX</p>
@@ -16,6 +45,69 @@
 <h1 id="int类型的最大最小值"><a href="#int类型的最大最小值" class="headerlink" title="int类型的最大最小值"></a>int类型的最大最小值</h1><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">INT_MAX (INT32_MAX)</span><br><span class="line">INT_MIN (INT32_MIN)</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>C++</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>build_blog</title>
+    <url>/2019/08/05/build-blog/</url>
+    <content><![CDATA[<p>基于hexo github 搭建主题为nextT的博客<br><a id="more"></a></p>
+<h1 id="github-搭建blog"><a href="#github-搭建blog" class="headerlink" title="github 搭建blog"></a>github 搭建blog</h1><h2 id="创建github-库"><a href="#创建github-库" class="headerlink" title="创建github 库"></a>创建github 库</h2><p>创建于用户名相同的github库 命名为user_name.github.io</p>
+<h2 id="安装Node-js"><a href="#安装Node-js" class="headerlink" title="安装Node.js"></a>安装Node.js</h2><p>方法百度</p>
+<h2 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h2><p>更换nmp 为淘宝源<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ npm config set registry https://registry.npm.taobao.org/</span><br><span class="line"></span><br><span class="line">$ npm config get registry</span><br></pre></td></tr></table></figure></p>
+<p>安装 hexo<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install hexo -g</span><br></pre></td></tr></table></figure></p>
+<h2 id="创建hexo文件夹"><a href="#创建hexo文件夹" class="headerlink" title="创建hexo文件夹"></a>创建hexo文件夹</h2><p>定位到自己创建的blog 文件夹<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/blog $ hexo init</span><br></pre></td></tr></table></figure></p>
+<p>安装一些组件<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ nmp install</span><br></pre></td></tr></table></figure></p>
+<h2 id="将Hexo-与github连接"><a href="#将Hexo-与github连接" class="headerlink" title="将Hexo 与github连接"></a>将Hexo 与github连接</h2><p>设置好git, 可百度方法<br>将blog 文件夹下面的站点配置文件_config.yml 进行修改<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">eploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: git@github.com:user_name/user_name.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure></p>
+<h2 id="拷贝主题NexT"><a href="#拷贝主题NexT" class="headerlink" title="拷贝主题NexT"></a>拷贝主题<a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="noopener">NexT</a></h2><p>通过git clone 命令进行， 主题会被放在theme 文件夹下<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cd your-hexo-site</span><br><span class="line">$ git clone https://github.com/iissnan/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure></p>
+<h2 id="启动主题"><a href="#启动主题" class="headerlink" title="启动主题"></a>启动主题</h2><p>与所有 Hexo 主题启用的模式一样。 当 克隆/下载 完成后，打开 站点配置文件， 找到 theme 字段，并将其值更改为 next</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">theme: next</span><br></pre></td></tr></table></figure>
+<h2 id="配置主题"><a href="#配置主题" class="headerlink" title="配置主题"></a>配置主题</h2><p>见链接 <a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="noopener">NexT</a></p>
+<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><h2 id="文件内容与文件目录介绍"><a href="#文件内容与文件目录介绍" class="headerlink" title="文件内容与文件目录介绍"></a>文件内容与文件目录介绍</h2><p>hexo 目录中_config.yml 为站点配置文件，source/_post/ 文件夹是存放.md静态文件的目录，其中的.md文件的开头如下<br>其中第三行左边的是类别的关键字（类别的应为就是categoties），右边是具体的类别,不同文件中冒号，左边的是固定的，右边根据需要写所属类别。<br>改模板在\blog\scaffolds\post.md中<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">title: build_blog</span><br><span class="line">date: 2019-08-05 21:43:01</span><br><span class="line">categories: &quot;blog&quot;</span><br></pre></td></tr></table></figure></p>
+<h2 id="hexo-常用命令"><a href="#hexo-常用命令" class="headerlink" title="hexo 常用命令"></a>hexo 常用命令</h2><p><strong>hexo 的所有操作都在git bash 上进行 并且定位在/blog 目录下</strong><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo g //生成静态网页并存储在public文件夹下</span><br><span class="line">hexo clean // 删除上述文件夹下的文件</span><br><span class="line">hexo s -p 5000 //指定本地端口5000 本地查看网页</span><br><span class="line">hexo d 上传网页 将public/2019...文件夹下的静态网页上传github</span><br></pre></td></tr></table></figure></p>
+]]></content>
+      <categories>
+        <category>blog</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>gn编译hello_world</title>
+    <url>/2020/09/17/gn%E7%BC%96%E8%AF%91hello-world/</url>
+    <content><![CDATA[<p>编译第一个hello,world</p>
+<a id="more"></a>
+<h1 id="使用GN-编译第一个hello，world"><a href="#使用GN-编译第一个hello，world" class="headerlink" title="使用GN 编译第一个hello，world"></a>使用GN 编译第一个hello，world</h1><p>创建一个工程目录temp，在工程目录里面创建hellow_world.cpp 文件并完成编写。切换到temp 目录下。</p>
+<p>在工程目录temp下,将下载的gn/文件夹下examples中的配置文件拷贝到当前目录，这个配置文件中包含BUILDCONFIG.gn等文件，属于对当前工程编译环境的设置，是gn编译的基础。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cp -rf gn/examples/simple_build/build ./</span><br></pre></td></tr></table></figure>
+<p>在工程目录中创建BUILD.gn文件，用来指定待编译的文件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">echo "executable(\"hello\") &#123; sources = [\"hello_world.cpp\"] &#125;" &gt; BUILD.gn</span><br></pre></td></tr></table></figure>
+<p>通过gn 命令 生成ninja</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gn gen out/default</span><br><span class="line"><span class="meta">#</span> ninja 编译生成exe</span><br><span class="line">ninja -C out/default -v </span><br><span class="line"><span class="meta">#</span> 运行exe</span><br><span class="line">./out/default/hello_world</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>GN工具</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>hexo_公式_图片</title>
+    <url>/2019/08/07/hexo-%E5%85%AC%E5%BC%8F-%E5%9B%BE%E7%89%87/</url>
+    <content><![CDATA[<p>向博客中添加图片和公式</p>
+<a id="more"></a>
+<h1 id="向博客中添加图片"><a href="#向博客中添加图片" class="headerlink" title="向博客中添加图片"></a>向博客中添加图片</h1><h2 id="更改站点配置文件"><a href="#更改站点配置文件" class="headerlink" title="更改站点配置文件"></a>更改站点配置文件</h2><p>将站点的_config.yml文件中的配置项post_asset_folder设为true</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">post_asset_folder: true</span><br></pre></td></tr></table></figure>
+<h2 id="存放照片"><a href="#存放照片" class="headerlink" title="存放照片"></a>存放照片</h2><p>执行命令$ hexo new post_name，在source/_posts中会生成文章post_name.md和同名文件夹post_name。将图片资源放在post_name中，文章就可以使用相对路径引用图片资源了。</p>
+<h2 id="在markdown-中插入照片"><a href="#在markdown-中插入照片" class="headerlink" title="在markdown 中插入照片"></a>在markdown 中插入照片</h2><p>图片在文章和首页中同时显示，可以使用标签插件语法。_posts/post_name/image.jpg这张照片可以用以下方式访问：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;% asset_img image_name.jpg (This is an image) %&#125;</span><br></pre></td></tr></table></figure></p>
+<p>其中： <strong>asset_img 是关键字 后面接空格然后加图片在同名文件夹中的名字，后面括号内的内容可省略，是图片在网页中显示的名字</strong></p>
+<h1 id="添加公式"><a href="#添加公式" class="headerlink" title="添加公式"></a>添加公式</h1><h2 id="更换-Hexo-的-markdown-渲染引擎，"><a href="#更换-Hexo-的-markdown-渲染引擎，" class="headerlink" title="更换 Hexo 的 markdown 渲染引擎，"></a>更换 Hexo 的 markdown 渲染引擎，</h2><p>hexo-renderer-kramed 引擎是在默认的渲染引擎 hexo-renderer-marked 的基础上修改了一些 bug ，两者比较接近，也比较轻量级<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ npm uninstall hexo-renderer-marked --save</span><br><span class="line">$ npm install hexo-renderer-kramed --save</span><br></pre></td></tr></table></figure></p>
+<h2 id="更改站点配置文件-1"><a href="#更改站点配置文件-1" class="headerlink" title="更改站点配置文件"></a>更改站点配置文件</h2><p>然后，跟换引擎后行间公式可以正确渲染了，但是这样还没有完全解决问题，行内公式的渲染还是有问题，因为 hexo-renderer-kramed 引擎也有语义冲突的问题。接下来到博客根目录下，找到node_modules\kramed\lib\rules\inline.js，把第11行的 escape 变量的值做相应的修改：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> //escape: /^\\([\\`*&#123;&#125;\[\]()#$+\-.!_&gt;])/,</span><br><span class="line">escape: /^\\([`*\[\]()#$+\-.!_&gt;])/,</span><br></pre></td></tr></table></figure>
+<p>这一步是在原基础上取消了对\,{,}的转义(escape)。同时把第20行的em变量也要做相应的修改</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> //em: /^\b_((?:__|[\s\S])+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br><span class="line">em: /^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br></pre></td></tr></table></figure>
+<p>重新启动hexo（先clean再generate）</p>
+<h2 id="更改主题配置文件"><a href="#更改主题配置文件" class="headerlink" title="更改主题配置文件"></a>更改主题配置文件</h2><p>在 Next 主题中开启 MathJax 开关, 找到mathjax<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mathjax:</span><br><span class="line">  enable: true</span><br><span class="line">  per_page: true</span><br><span class="line">  engine: mathjax</span><br><span class="line">  cdn: //cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML</span><br></pre></td></tr></table></figure></p>
+<h2 id="在文章的头里-添加mathjax：-true"><a href="#在文章的头里-添加mathjax：-true" class="headerlink" title="在文章的头里 添加mathjax： true"></a>在文章的头里 添加mathjax： true</h2><p>在根目录下scaffolds/post.md 添加<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mathjax: true</span><br></pre></td></tr></table></figure></p>
+<p>之所以要在文章头里设置开关，是因为考虑只有在用到公式的页面才加载 Mathjax，这样不需要渲染数学公式的页面的访问速度就不会受到影响了。没有公式的文章用false 即可。<br><strong>之前生成的页面需要加载mathjax的需要手动添加上述文章头，确保开关为true</strong></p>
+]]></content>
+      <categories>
+        <category>blog</category>
       </categories>
   </entry>
   <entry>
@@ -64,74 +156,6 @@
       </categories>
   </entry>
   <entry>
-    <title>安装GN环境流程与命令</title>
-    <url>/2020/09/12/GNGN-compile/</url>
-    <content><![CDATA[<p>GN工具安装的命令介绍<br><a id="more"></a></p>
-<h1 id="GN工具的安装"><a href="#GN工具的安装" class="headerlink" title="GN工具的安装"></a>GN工具的安装</h1><h2 id="命令如下"><a href="#命令如下" class="headerlink" title="命令如下"></a>命令如下</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span> 安装C++环境</span><br><span class="line">sudo apt-get install gcc</span><br><span class="line"><span class="meta">#</span> g++安装失败，提示依赖就换源，https://mirrors.tuna.tsinghua.edu.cn/</span><br><span class="line">sudo apt-get install g++</span><br><span class="line"><span class="meta">#</span> 查看安装结果</span><br><span class="line">gcc --version</span><br><span class="line">g++ --version</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span>#################################################################</span><br><span class="line"><span class="meta">#</span> 安装依赖 re2c</span><br><span class="line">apt-get install re2c</span><br><span class="line">re</span><br><span class="line">2c --version  #查看安装的版本</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span>################################################################</span><br><span class="line"><span class="meta">#</span> 下载ninjia</span><br><span class="line">git clone https://github.com/ninja-build/ninja.git</span><br><span class="line"><span class="meta">#</span> 执行编译脚本</span><br><span class="line">./configure.py --bootstrap</span><br><span class="line"><span class="meta">#</span> 放如系统文件夹下</span><br><span class="line">sudo cp ./ninja  /usr/bin </span><br><span class="line"><span class="meta">#</span> 查看是否成功</span><br><span class="line">ninja --version</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span>################################################################</span><br><span class="line"><span class="meta">#</span> 安装clang</span><br><span class="line">sudo apt-get install clang</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span>################################################################</span><br><span class="line"><span class="meta">#</span> 安装gn  可选：https://github.com/timniederhausen/gn</span><br><span class="line">git clone https://chromium.googlesource.com/chromium/src/tools/gn</span><br><span class="line"><span class="meta">#</span> 执行编译脚本</span><br><span class="line">./build/gen.py</span><br><span class="line"><span class="meta">#</span>ninjia  构建  编译结束后，gn程序就在gn/out目录中</span><br><span class="line">ninja -C out</span><br><span class="line"><span class="meta">#</span> 结果复制到系统目录</span><br><span class="line">sudo cp ./out/gn /usr/bin</span><br><span class="line"><span class="meta">#</span> 查看是否成功</span><br><span class="line">gn --version</span><br><span class="line">1834 (09fffae49)</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>GN工具</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>C++容器</title>
-    <url>/2019/08/05/C-%E5%AE%B9%E5%99%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B0%8F%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<p>关于初学C++容器的的一些方法的简单记录</p>
-<a id="more"></a>
-<h1 id="容器的初始化与索引数据类型："><a href="#容器的初始化与索引数据类型：" class="headerlink" title="容器的初始化与索引数据类型："></a>容器的初始化与索引数据类型：</h1><h2 id="vector初始化"><a href="#vector初始化" class="headerlink" title="vector初始化"></a>vector初始化</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_vec&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;;</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_vec(<span class="number">10</span>,<span class="number">5</span>);<span class="comment">// 初始化10个5</span></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_vec(<span class="number">10</span>); <span class="comment">// 初始化10个位置</span></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;my_sec&#123;my_vec.begin()+<span class="number">2</span>,my_vec.end()<span class="number">-1</span>&#125;; <span class="comment">//通过my_vec进行初始化[2:-1)</span></span><br></pre></td></tr></table></figure>
-<h2 id="map初始化"><a href="#map初始化" class="headerlink" title="map初始化"></a>map初始化</h2> <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">map</span>&lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt; my_map&#123;&#123; , &#125; , &#123; , &#125;&#125;; <span class="comment">//map 存储pair 类型作为元素</span></span><br><span class="line"><span class="comment">// map 与python类似 my_map【】 索引可添加元素</span></span><br></pre></td></tr></table></figure>
-<h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><p>  对于容器的索引，例如vec[index]. index 是unsign类型，类型名字是size_t，<strong>当与int类型进行比较，以及运算是容易出错</strong>。<br>  <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"> <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; ans(<span class="number">10</span>,<span class="number">5</span>);</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_v&#123;ans.begin()+<span class="number">2</span>,ans.end()<span class="number">-5</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//会报错no matching function for call to 'min'   auto anss = min(5,ans.size()); ans.size()不是int类型 转化为int 才能比较。</span></span><br><span class="line"><span class="keyword">auto</span> anss = min(<span class="number">5</span>,ans.size());</span><br></pre></td></tr></table></figure></p>
-<h1 id="容器的增删改查加排序"><a href="#容器的增删改查加排序" class="headerlink" title="容器的增删改查加排序"></a>容器的增删改查加排序</h1><h2 id="添加元素"><a href="#添加元素" class="headerlink" title="添加元素"></a>添加元素</h2><p>  添加数据可以通过容器自带的类似于push_back(), insert()方法；或者inserter() 这样的泛型函数；<br>  <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; vec&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;;</span><br><span class="line"><span class="keyword">auto</span> it = vec.insert(vec.begin()+<span class="number">1</span>, <span class="number">10</span>);  <span class="comment">// 返回的it 是插入位置(10 所在的位置)的迭代器， 在第一个参数（迭代器）前面插入后面参数的内容</span></span><br><span class="line">it = vec.insert(vec.end(), <span class="number">3</span>, <span class="number">4</span>);    <span class="comment">//插入通过构造函数调用后两个参数的返回值（3个4）插入到vec 末尾</span></span><br><span class="line">it = vec.insert(vec.end(),vec2.begin(), vec2.end());   <span class="comment">// 将vec2插入到vec1里, 类似python 里面的extend</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="删除元素"><a href="#删除元素" class="headerlink" title="删除元素"></a>删除元素</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;::iterator  it_1;</span><br><span class="line"><span class="keyword">auto</span> it = vec.erase(it_1); <span class="comment">//删除迭代器所指的元素，返回删除元素位置后一位的迭代器。</span></span><br></pre></td></tr></table></figure>
-<h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><p>可以通过迭代器的解引用*it 进行索引和修改 也可以是下标索引，<strong>map索引的时候可能会添加心的pair</strong></p>
-<h2 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//  对于string vec 调用自己的find 方法</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> it = vec.find(target_val, start_index, end_index);  <span class="comment">// 从索引范围内查找第一个元素 返回元素所在index 若不在则返回比长度大得多的整数</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// find_first_of , find_last_of声明如下</span></span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">const</span> <span class="built_in">string</span>&amp; str, <span class="keyword">size_t</span> pos = npos) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">const</span> <span class="keyword">char</span>* s, <span class="keyword">size_t</span> pos = npos) <span class="keyword">const</span>;</span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">const</span> <span class="keyword">char</span>* s, <span class="keyword">size_t</span> pos, <span class="keyword">size_t</span> n) <span class="keyword">const</span>;</span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">char</span> c, <span class="keyword">size_t</span> pos = npos) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 对于vector 没有find 方法 需要调用 泛型函数 find</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> it = find(vec.begin(), vec.end(), target_val); <span class="comment">// 输入输出均为迭代器；与string index不同</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 对于map 查找可以用find 返回值是key 也可以用count 返回true false;</span></span><br></pre></td></tr></table></figure>
-<h2 id="容器最大值最小值的索引"><a href="#容器最大值最小值的索引" class="headerlink" title="容器最大值最小值的索引"></a>容器最大值最小值的索引</h2><p>通过返回最大或者最小值的迭代器，然后与begin()迭代器做差得到<br><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; v(<span class="number">10</span>);</span><br><span class="line"><span class="keyword">auto</span> it = max_element(v.begin(),v.end());</span><br><span class="line"><span class="keyword">int</span> index = it-v.begin();</span><br></pre></td></tr></table></figure></p>
-<h2 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h2><p>泛型函数sort(it.begin(), it.end(),my_sort);<br><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">sort(numbers.begin(),numbers.end(),my_sort);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">my_sort</span><span class="params">(<span class="keyword">int</span> A, intB)</span></span>&#123;</span><br><span class="line"><span class="keyword">return</span> A&lt;B;<span class="comment">//A靠前</span></span><br><span class="line">&#125;</span><br><span class="line">my_sort函数为成员函数时（成员函数默认第一个参数是*<span class="keyword">this</span>） 需要加<span class="keyword">static</span> 作为一般函数（没有<span class="keyword">this</span>参数）是不需要</span><br></pre></td></tr></table></figure></p>
-<h1 id="容器的泛型函数"><a href="#容器的泛型函数" class="headerlink" title="容器的泛型函数"></a>容器的泛型函数</h1><h2 id="反转"><a href="#反转" class="headerlink" title="反转"></a>反转</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; arrayRever&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;;</span><br><span class="line">reverse(arrayRever.begin(),arrayRever.end()); <span class="comment">//没有返回值 就地反转</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; vec (arrayRever.rbegin(), arrayRever.rend()); <span class="comment">// 初始化反转</span></span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>C++</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>build_blog</title>
-    <url>/2019/08/05/build-blog/</url>
-    <content><![CDATA[<p>基于hexo github 搭建主题为nextT的博客<br><a id="more"></a></p>
-<h1 id="github-搭建blog"><a href="#github-搭建blog" class="headerlink" title="github 搭建blog"></a>github 搭建blog</h1><h2 id="创建github-库"><a href="#创建github-库" class="headerlink" title="创建github 库"></a>创建github 库</h2><p>创建于用户名相同的github库 命名为user_name.github.io</p>
-<h2 id="安装Node-js"><a href="#安装Node-js" class="headerlink" title="安装Node.js"></a>安装Node.js</h2><p>方法百度</p>
-<h2 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h2><p>更换nmp 为淘宝源<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ npm config set registry https://registry.npm.taobao.org/</span><br><span class="line"></span><br><span class="line">$ npm config get registry</span><br></pre></td></tr></table></figure></p>
-<p>安装 hexo<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install hexo -g</span><br></pre></td></tr></table></figure></p>
-<h2 id="创建hexo文件夹"><a href="#创建hexo文件夹" class="headerlink" title="创建hexo文件夹"></a>创建hexo文件夹</h2><p>定位到自己创建的blog 文件夹<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/blog $ hexo init</span><br></pre></td></tr></table></figure></p>
-<p>安装一些组件<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ nmp install</span><br></pre></td></tr></table></figure></p>
-<h2 id="将Hexo-与github连接"><a href="#将Hexo-与github连接" class="headerlink" title="将Hexo 与github连接"></a>将Hexo 与github连接</h2><p>设置好git, 可百度方法<br>将blog 文件夹下面的站点配置文件_config.yml 进行修改<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">eploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: git@github.com:user_name/user_name.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure></p>
-<h2 id="拷贝主题NexT"><a href="#拷贝主题NexT" class="headerlink" title="拷贝主题NexT"></a>拷贝主题<a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="noopener">NexT</a></h2><p>通过git clone 命令进行， 主题会被放在theme 文件夹下<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cd your-hexo-site</span><br><span class="line">$ git clone https://github.com/iissnan/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure></p>
-<h2 id="启动主题"><a href="#启动主题" class="headerlink" title="启动主题"></a>启动主题</h2><p>与所有 Hexo 主题启用的模式一样。 当 克隆/下载 完成后，打开 站点配置文件， 找到 theme 字段，并将其值更改为 next</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">theme: next</span><br></pre></td></tr></table></figure>
-<h2 id="配置主题"><a href="#配置主题" class="headerlink" title="配置主题"></a>配置主题</h2><p>见链接 <a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="noopener">NexT</a></p>
-<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><h2 id="文件内容与文件目录介绍"><a href="#文件内容与文件目录介绍" class="headerlink" title="文件内容与文件目录介绍"></a>文件内容与文件目录介绍</h2><p>hexo 目录中_config.yml 为站点配置文件，source/_post/ 文件夹是存放.md静态文件的目录，其中的.md文件的开头如下<br>其中第三行左边的是类别的关键字（类别的应为就是categoties），右边是具体的类别,不同文件中冒号，左边的是固定的，右边根据需要写所属类别。<br>改模板在\blog\scaffolds\post.md中<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">title: build_blog</span><br><span class="line">date: 2019-08-05 21:43:01</span><br><span class="line">categories: &quot;blog&quot;</span><br></pre></td></tr></table></figure></p>
-<h2 id="hexo-常用命令"><a href="#hexo-常用命令" class="headerlink" title="hexo 常用命令"></a>hexo 常用命令</h2><p><strong>hexo 的所有操作都在git bash 上进行 并且定位在/blog 目录下</strong><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo g //生成静态网页并存储在public文件夹下</span><br><span class="line">hexo clean // 删除上述文件夹下的文件</span><br><span class="line">hexo s -p 5000 //指定本地端口5000 本地查看网页</span><br><span class="line">hexo d 上传网页 将public/2019...文件夹下的静态网页上传github</span><br></pre></td></tr></table></figure></p>
-]]></content>
-      <categories>
-        <category>blog</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>gn编译hello_world</title>
-    <url>/2020/09/17/gn%E7%BC%96%E8%AF%91hello-world/</url>
-    <content><![CDATA[<p>编译第一个hello,world</p>
-<a id="more"></a>
-<h1 id="使用GN-编译第一个hello，world"><a href="#使用GN-编译第一个hello，world" class="headerlink" title="使用GN 编译第一个hello，world"></a>使用GN 编译第一个hello，world</h1><p>创建一个工程目录temp，在工程目录里面创建hellow_world.cpp 文件并完成编写。切换到temp 目录下。</p>
-<p>在工程目录temp下,将下载的gn/文件夹下examples中的配置文件拷贝到当前目录，这个配置文件中包含BUILDCONFIG.gn等文件，属于对当前工程编译环境的设置，是gn编译的基础。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cp -rf gn/examples/simple_build/build ./</span><br></pre></td></tr></table></figure>
-<p>在工程目录中创建BUILD.gn文件，用来指定待编译的文件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">echo "executable(\"hello\") &#123; sources = [\"hello_world.cpp\"] &#125;" &gt; BUILD.gn</span><br></pre></td></tr></table></figure>
-<p>通过gn 命令 生成ninja</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gn gen out/default</span><br><span class="line"><span class="meta">#</span> ninja 编译生成exe</span><br><span class="line">ninja -C out/default -v </span><br><span class="line"><span class="meta">#</span> 运行exe</span><br><span class="line">./out/default/hello_world</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>GN工具</category>
-      </categories>
-  </entry>
-  <entry>
     <title>xgboost</title>
     <url>/2019/09/03/xgboost/</url>
     <content><![CDATA[<p>xgboost 节点值的选择与分裂</p>
@@ -146,30 +170,6 @@
 ]]></content>
       <categories>
         <category>true</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>hexo_公式_图片</title>
-    <url>/2019/08/07/hexo-%E5%85%AC%E5%BC%8F-%E5%9B%BE%E7%89%87/</url>
-    <content><![CDATA[<p>向博客中添加图片和公式</p>
-<a id="more"></a>
-<h1 id="向博客中添加图片"><a href="#向博客中添加图片" class="headerlink" title="向博客中添加图片"></a>向博客中添加图片</h1><h2 id="更改站点配置文件"><a href="#更改站点配置文件" class="headerlink" title="更改站点配置文件"></a>更改站点配置文件</h2><p>将站点的_config.yml文件中的配置项post_asset_folder设为true</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">post_asset_folder: true</span><br></pre></td></tr></table></figure>
-<h2 id="存放照片"><a href="#存放照片" class="headerlink" title="存放照片"></a>存放照片</h2><p>执行命令$ hexo new post_name，在source/_posts中会生成文章post_name.md和同名文件夹post_name。将图片资源放在post_name中，文章就可以使用相对路径引用图片资源了。</p>
-<h2 id="在markdown-中插入照片"><a href="#在markdown-中插入照片" class="headerlink" title="在markdown 中插入照片"></a>在markdown 中插入照片</h2><p>图片在文章和首页中同时显示，可以使用标签插件语法。_posts/post_name/image.jpg这张照片可以用以下方式访问：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;% asset_img image_name.jpg (This is an image) %&#125;</span><br></pre></td></tr></table></figure></p>
-<p>其中： <strong>asset_img 是关键字 后面接空格然后加图片在同名文件夹中的名字，后面括号内的内容可省略，是图片在网页中显示的名字</strong></p>
-<h1 id="添加公式"><a href="#添加公式" class="headerlink" title="添加公式"></a>添加公式</h1><h2 id="更换-Hexo-的-markdown-渲染引擎，"><a href="#更换-Hexo-的-markdown-渲染引擎，" class="headerlink" title="更换 Hexo 的 markdown 渲染引擎，"></a>更换 Hexo 的 markdown 渲染引擎，</h2><p>hexo-renderer-kramed 引擎是在默认的渲染引擎 hexo-renderer-marked 的基础上修改了一些 bug ，两者比较接近，也比较轻量级<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ npm uninstall hexo-renderer-marked --save</span><br><span class="line">$ npm install hexo-renderer-kramed --save</span><br></pre></td></tr></table></figure></p>
-<h2 id="更改站点配置文件-1"><a href="#更改站点配置文件-1" class="headerlink" title="更改站点配置文件"></a>更改站点配置文件</h2><p>然后，跟换引擎后行间公式可以正确渲染了，但是这样还没有完全解决问题，行内公式的渲染还是有问题，因为 hexo-renderer-kramed 引擎也有语义冲突的问题。接下来到博客根目录下，找到node_modules\kramed\lib\rules\inline.js，把第11行的 escape 变量的值做相应的修改：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> //escape: /^\\([\\`*&#123;&#125;\[\]()#$+\-.!_&gt;])/,</span><br><span class="line">escape: /^\\([`*\[\]()#$+\-.!_&gt;])/,</span><br></pre></td></tr></table></figure>
-<p>这一步是在原基础上取消了对\,{,}的转义(escape)。同时把第20行的em变量也要做相应的修改</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> //em: /^\b_((?:__|[\s\S])+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br><span class="line">em: /^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br></pre></td></tr></table></figure>
-<p>重新启动hexo（先clean再generate）</p>
-<h2 id="更改主题配置文件"><a href="#更改主题配置文件" class="headerlink" title="更改主题配置文件"></a>更改主题配置文件</h2><p>在 Next 主题中开启 MathJax 开关, 找到mathjax<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mathjax:</span><br><span class="line">  enable: true</span><br><span class="line">  per_page: true</span><br><span class="line">  engine: mathjax</span><br><span class="line">  cdn: //cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML</span><br></pre></td></tr></table></figure></p>
-<h2 id="在文章的头里-添加mathjax：-true"><a href="#在文章的头里-添加mathjax：-true" class="headerlink" title="在文章的头里 添加mathjax： true"></a>在文章的头里 添加mathjax： true</h2><p>在根目录下scaffolds/post.md 添加<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mathjax: true</span><br></pre></td></tr></table></figure></p>
-<p>之所以要在文章头里设置开关，是因为考虑只有在用到公式的页面才加载 Mathjax，这样不需要渲染数学公式的页面的访问速度就不会受到影响了。没有公式的文章用false 即可。<br><strong>之前生成的页面需要加载mathjax的需要手动添加上述文章头，确保开关为true</strong></p>
-]]></content>
-      <categories>
-        <category>blog</category>
       </categories>
   </entry>
   <entry>
@@ -206,26 +206,6 @@
       </categories>
   </entry>
   <entry>
-    <title>反向传导</title>
-    <url>/2019/08/19/%E5%8F%8D%E5%90%91%E4%BC%A0%E5%AF%BC/</url>
-    <content><![CDATA[<p>RNN 与 反向传播<br><a id="more"></a></p>
-<h1 id="反向传播的思想"><a href="#反向传播的思想" class="headerlink" title="反向传播的思想"></a>反向传播的思想</h1><h2 id="梯度下降"><a href="#梯度下降" class="headerlink" title="梯度下降"></a>梯度下降</h2><p>对于一个固定的函数，在其他变量不变的情况下，观测点沿着函数任一个自变量的负梯度方向移动就会使得观测点的函数值下降，同理同时沿着每个自变量的负梯度构成的负梯度方向移动，函数值就会很快的下降。</p>
-<p>对于机器学习，一般的决策函数可以表示为$\hat y = f(x,\theta )$  其中x是已知输入，y是输出，$\theta$ 是参数，但是在给定训练集和label时，其实自变量就是这个参数，我们的目标是找到一个合适的参数，让模型成为到我们想要的样子，所以我们把‘想要的样子’定义为与真实label 的差距，也就是目标函数，$L(y_i,\hat y_i)$ ,我们用它来衡量，模型与我们期望的差距，差距越小越好。所以目标函数可以看作是L为因变量，$\theta$ 是自变量，我们的终极目标是求L 的最小值时的 $\theta$ 的值。在预测是参数是固定的，此时自变量又变回了x.<br>所以参数的跟新与L的数值结果没有关系，只与它的导数以及当前参数值有关。</p>
-<h2 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h2><p>其实传播只是一种通俗，形象的描述，其本质是链式法则，计算目标L对每个参数的导数，然后更新参数。</p>
-<h2 id="RNN-举例介绍反向传播"><a href="#RNN-举例介绍反向传播" class="headerlink" title="RNN 举例介绍反向传播"></a>RNN 举例介绍反向传播</h2><img src="/2019/08/19/反向传导/rnnliucheng.png">
-<script type="math/tex; mode=display">z^t = U* X^t+ W* h^{t-1 } + b</script><script type="math/tex; mode=display">h^t = \delta(z^t)</script><script type="math/tex; mode=display">o^t = V * h^t + c</script><script type="math/tex; mode=display">\hat {y^t} = \sigma(o^t)</script><script type="math/tex; mode=display">L =\sum_t L_t= \sum_t loss(y_t, \hat y_t )</script><p>(由于参数W等是公用的，通过L的表达式可以得到每更新一次参数，就是把$L_t$ 的所有分量的梯度加起来)<br>反向对于参数（目前的自变量）W,V,U,b,c,，分别计算梯度，<br>从举例L最近的分别求导，<br>首先L 对$\hat y_i$ 求导，然后对c求导，按照一般的链式求导法则，很容易计算得到</p>
-<script type="math/tex; mode=display">\sum_t \frac{dL}{dy_t} *   \frac {dy_t}{do^t} *  \frac {do^t}{dc}</script><p>当L是交叉熵，$\sigma$ 是softmax的时候,结果为：$\sum_t (\hat y_t-  y_t)$<br>同理容易求得对V的导数。</p>
-<p>比较难求的是W,U,b 这里以W为例，进行求解。<br>显然W的因变量是$h_t$ ,而$h_t$ 的因变量，有两个，一个是下一层的$L_{t+1}$ (因为影响了下一层的输入$h_{t+1}$) 另一个是这一层的$L_t$ 的. <strong>所以L对于$h_t$的求导会有两个部分（$h_t$对参数W，U，b 求导很简单，直接求导）</strong><br>首先计算L对$h_t$的导数：<br>对于最后一层,T时刻，后续没有$h_{T+1}$所以：</p>
-<script type="math/tex; mode=display">\frac{dL_T}{dy_T} *   \frac{dy_T}{do^T} * \frac{do^T}{dh_T} =  (\hat y_T-  y_T)* V</script><p>当t小于T时，令<script type="math/tex">f(t)=\frac{dL}{dh_t}</script></p>
-<script type="math/tex; mode=display">f(t) = \frac{dL_t}{dy_t} *   \frac{dy_t}{do^t} * \frac{do^t}{dh_t} +\frac{dL_{t+1}}{dy_{t+1}} *   \frac{dy_{t+1}}{do^{t+1}} * \frac{do^{t+1}}{dh_{t+1}}* \frac{dh^{t+1}}{dh_t}</script><script type="math/tex; mode=display">f(t) =  (\hat y_t-  y_t)* V+f(t+1)* \delta'(h^{t+1})* W</script><p>显然、$\frac{dh^t}{dW} =h_{t-1}$<br>所以对于，每个L分量$L_t$ 对W求导为：</p>
-<script type="math/tex; mode=display">f(t)* \frac{dh^t}{z^t}*  \frac{z^t}{dW}=f(t)* \frac{dh^t}{z^t}* W</script><p>所以</p>
-<script type="math/tex; mode=display">\frac{dL}{dW} = \sum_t f(t)* \frac{dh^t}{z^t}* W</script><script type="math/tex; mode=display">W_{new} =W_{old} -  \frac{dL}{dW_{old}}</script><p>同理容易求得其他参数。<br>所以可以看出是每一个序列，更新一次RNN的参数。</p>
-]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-  </entry>
-  <entry>
     <title>动态规划</title>
     <url>/2019/08/06/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</url>
     <content><![CDATA[<p>应用动态规划解决队列问题<br><a id="more"></a></p>
@@ -249,6 +229,26 @@
 ]]></content>
       <categories>
         <category>数据结构与算法</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>反向传导</title>
+    <url>/2019/08/19/%E5%8F%8D%E5%90%91%E4%BC%A0%E5%AF%BC/</url>
+    <content><![CDATA[<p>RNN 与 反向传播<br><a id="more"></a></p>
+<h1 id="反向传播的思想"><a href="#反向传播的思想" class="headerlink" title="反向传播的思想"></a>反向传播的思想</h1><h2 id="梯度下降"><a href="#梯度下降" class="headerlink" title="梯度下降"></a>梯度下降</h2><p>对于一个固定的函数，在其他变量不变的情况下，观测点沿着函数任一个自变量的负梯度方向移动就会使得观测点的函数值下降，同理同时沿着每个自变量的负梯度构成的负梯度方向移动，函数值就会很快的下降。</p>
+<p>对于机器学习，一般的决策函数可以表示为$\hat y = f(x,\theta )$  其中x是已知输入，y是输出，$\theta$ 是参数，但是在给定训练集和label时，其实自变量就是这个参数，我们的目标是找到一个合适的参数，让模型成为到我们想要的样子，所以我们把‘想要的样子’定义为与真实label 的差距，也就是目标函数，$L(y_i,\hat y_i)$ ,我们用它来衡量，模型与我们期望的差距，差距越小越好。所以目标函数可以看作是L为因变量，$\theta$ 是自变量，我们的终极目标是求L 的最小值时的 $\theta$ 的值。在预测是参数是固定的，此时自变量又变回了x.<br>所以参数的跟新与L的数值结果没有关系，只与它的导数以及当前参数值有关。</p>
+<h2 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h2><p>其实传播只是一种通俗，形象的描述，其本质是链式法则，计算目标L对每个参数的导数，然后更新参数。</p>
+<h2 id="RNN-举例介绍反向传播"><a href="#RNN-举例介绍反向传播" class="headerlink" title="RNN 举例介绍反向传播"></a>RNN 举例介绍反向传播</h2><img src="/2019/08/19/反向传导/rnnliucheng.png">
+<script type="math/tex; mode=display">z^t = U* X^t+ W* h^{t-1 } + b</script><script type="math/tex; mode=display">h^t = \delta(z^t)</script><script type="math/tex; mode=display">o^t = V * h^t + c</script><script type="math/tex; mode=display">\hat {y^t} = \sigma(o^t)</script><script type="math/tex; mode=display">L =\sum_t L_t= \sum_t loss(y_t, \hat y_t )</script><p>(由于参数W等是公用的，通过L的表达式可以得到每更新一次参数，就是把$L_t$ 的所有分量的梯度加起来)<br>反向对于参数（目前的自变量）W,V,U,b,c,，分别计算梯度，<br>从举例L最近的分别求导，<br>首先L 对$\hat y_i$ 求导，然后对c求导，按照一般的链式求导法则，很容易计算得到</p>
+<script type="math/tex; mode=display">\sum_t \frac{dL}{dy_t} *   \frac {dy_t}{do^t} *  \frac {do^t}{dc}</script><p>当L是交叉熵，$\sigma$ 是softmax的时候,结果为：$\sum_t (\hat y_t-  y_t)$<br>同理容易求得对V的导数。</p>
+<p>比较难求的是W,U,b 这里以W为例，进行求解。<br>显然W的因变量是$h_t$ ,而$h_t$ 的因变量，有两个，一个是下一层的$L_{t+1}$ (因为影响了下一层的输入$h_{t+1}$) 另一个是这一层的$L_t$ 的. <strong>所以L对于$h_t$的求导会有两个部分（$h_t$对参数W，U，b 求导很简单，直接求导）</strong><br>首先计算L对$h_t$的导数：<br>对于最后一层,T时刻，后续没有$h_{T+1}$所以：</p>
+<script type="math/tex; mode=display">\frac{dL_T}{dy_T} *   \frac{dy_T}{do^T} * \frac{do^T}{dh_T} =  (\hat y_T-  y_T)* V</script><p>当t小于T时，令<script type="math/tex">f(t)=\frac{dL}{dh_t}</script></p>
+<script type="math/tex; mode=display">f(t) = \frac{dL_t}{dy_t} *   \frac{dy_t}{do^t} * \frac{do^t}{dh_t} +\frac{dL_{t+1}}{dy_{t+1}} *   \frac{dy_{t+1}}{do^{t+1}} * \frac{do^{t+1}}{dh_{t+1}}* \frac{dh^{t+1}}{dh_t}</script><script type="math/tex; mode=display">f(t) =  (\hat y_t-  y_t)* V+f(t+1)* \delta'(h^{t+1})* W</script><p>显然、$\frac{dh^t}{dW} =h_{t-1}$<br>所以对于，每个L分量$L_t$ 对W求导为：</p>
+<script type="math/tex; mode=display">f(t)* \frac{dh^t}{z^t}*  \frac{z^t}{dW}=f(t)* \frac{dh^t}{z^t}* W</script><p>所以</p>
+<script type="math/tex; mode=display">\frac{dL}{dW} = \sum_t f(t)* \frac{dh^t}{z^t}* W</script><script type="math/tex; mode=display">W_{new} =W_{old} -  \frac{dL}{dW_{old}}</script><p>同理容易求得其他参数。<br>所以可以看出是每一个序列，更新一次RNN的参数。</p>
+]]></content>
+      <categories>
+        <category>机器学习</category>
       </categories>
   </entry>
 </search>
