@@ -1,25 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>C++容器</title>
-    <url>/2019/08/05/C-%E5%AE%B9%E5%99%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B0%8F%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<p>关于初学C++容器的的一些方法的简单记录</p>
-<a id="more"></a>
-<h1 id="容器的初始化与索引数据类型："><a href="#容器的初始化与索引数据类型：" class="headerlink" title="容器的初始化与索引数据类型："></a>容器的初始化与索引数据类型：</h1><h2 id="vector初始化"><a href="#vector初始化" class="headerlink" title="vector初始化"></a>vector初始化</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_vec&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;;</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_vec(<span class="number">10</span>,<span class="number">5</span>);<span class="comment">// 初始化10个5</span></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_vec(<span class="number">10</span>); <span class="comment">// 初始化10个位置</span></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;my_sec&#123;my_vec.begin()+<span class="number">2</span>,my_vec.end()<span class="number">-1</span>&#125;; <span class="comment">//通过my_vec进行初始化[2:-1)</span></span><br></pre></td></tr></table></figure>
-<h2 id="map初始化"><a href="#map初始化" class="headerlink" title="map初始化"></a>map初始化</h2> <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">map</span>&lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt; my_map&#123;&#123; , &#125; , &#123; , &#125;&#125;; <span class="comment">//map 存储pair 类型作为元素</span></span><br><span class="line"><span class="comment">// map 与python类似 my_map【】 索引可添加元素</span></span><br></pre></td></tr></table></figure>
-<h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><p>  对于容器的索引，例如vec[index]. index 是unsign类型，类型名字是size_t，<strong>当与int类型进行比较，以及运算是容易出错</strong>。<br>  <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"> <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; ans(<span class="number">10</span>,<span class="number">5</span>);</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_v&#123;ans.begin()+<span class="number">2</span>,ans.end()<span class="number">-5</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//会报错no matching function for call to 'min'   auto anss = min(5,ans.size()); ans.size()不是int类型 转化为int 才能比较。</span></span><br><span class="line"><span class="keyword">auto</span> anss = min(<span class="number">5</span>,ans.size());</span><br></pre></td></tr></table></figure></p>
-<h1 id="容器的增删改查加排序"><a href="#容器的增删改查加排序" class="headerlink" title="容器的增删改查加排序"></a>容器的增删改查加排序</h1><h2 id="添加元素"><a href="#添加元素" class="headerlink" title="添加元素"></a>添加元素</h2><p>  添加数据可以通过容器自带的类似于push_back(), insert()方法；或者inserter() 这样的泛型函数；<br>  <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; vec&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;;</span><br><span class="line"><span class="keyword">auto</span> it = vec.insert(vec.begin()+<span class="number">1</span>, <span class="number">10</span>);  <span class="comment">// 返回的it 是插入位置(10 所在的位置)的迭代器， 在第一个参数（迭代器）前面插入后面参数的内容</span></span><br><span class="line">it = vec.insert(vec.end(), <span class="number">3</span>, <span class="number">4</span>);    <span class="comment">//插入通过构造函数调用后两个参数的返回值（3个4）插入到vec 末尾</span></span><br><span class="line">it = vec.insert(vec.end(),vec2.begin(), vec2.end());   <span class="comment">// 将vec2插入到vec1里, 类似python 里面的extend</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="删除元素"><a href="#删除元素" class="headerlink" title="删除元素"></a>删除元素</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;::iterator  it_1;</span><br><span class="line"><span class="keyword">auto</span> it = vec.erase(it_1); <span class="comment">//删除迭代器所指的元素，返回删除元素位置后一位的迭代器。</span></span><br></pre></td></tr></table></figure>
-<h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><p>可以通过迭代器的解引用*it 进行索引和修改 也可以是下标索引，<strong>map索引的时候可能会添加心的pair</strong></p>
-<h2 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//  对于string vec 调用自己的find 方法</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> it = vec.find(target_val, start_index, end_index);  <span class="comment">// 从索引范围内查找第一个元素 返回元素所在index 若不在则返回比长度大得多的整数</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// find_first_of , find_last_of声明如下</span></span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">const</span> <span class="built_in">string</span>&amp; str, <span class="keyword">size_t</span> pos = npos) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">const</span> <span class="keyword">char</span>* s, <span class="keyword">size_t</span> pos = npos) <span class="keyword">const</span>;</span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">const</span> <span class="keyword">char</span>* s, <span class="keyword">size_t</span> pos, <span class="keyword">size_t</span> n) <span class="keyword">const</span>;</span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">char</span> c, <span class="keyword">size_t</span> pos = npos) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 对于vector 没有find 方法 需要调用 泛型函数 find</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> it = find(vec.begin(), vec.end(), target_val); <span class="comment">// 输入输出均为迭代器；与string index不同</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 对于map 查找可以用find 返回值是key 也可以用count 返回true false;</span></span><br></pre></td></tr></table></figure>
-<h2 id="容器最大值最小值的索引"><a href="#容器最大值最小值的索引" class="headerlink" title="容器最大值最小值的索引"></a>容器最大值最小值的索引</h2><p>通过返回最大或者最小值的迭代器，然后与begin()迭代器做差得到<br><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; v(<span class="number">10</span>);</span><br><span class="line"><span class="keyword">auto</span> it = max_element(v.begin(),v.end());</span><br><span class="line"><span class="keyword">int</span> index = it-v.begin();</span><br></pre></td></tr></table></figure></p>
-<h2 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h2><p>泛型函数sort(it.begin(), it.end(),my_sort);<br><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">sort(numbers.begin(),numbers.end(),my_sort);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">my_sort</span><span class="params">(<span class="keyword">int</span> A, intB)</span></span>&#123;</span><br><span class="line"><span class="keyword">return</span> A&lt;B;<span class="comment">//A靠前</span></span><br><span class="line">&#125;</span><br><span class="line">my_sort函数为成员函数时（成员函数默认第一个参数是*<span class="keyword">this</span>） 需要加<span class="keyword">static</span> 作为一般函数（没有<span class="keyword">this</span>参数）是不需要</span><br></pre></td></tr></table></figure></p>
-<h1 id="容器的泛型函数"><a href="#容器的泛型函数" class="headerlink" title="容器的泛型函数"></a>容器的泛型函数</h1><h2 id="反转"><a href="#反转" class="headerlink" title="反转"></a>反转</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; arrayRever&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;;</span><br><span class="line">reverse(arrayRever.begin(),arrayRever.end()); <span class="comment">//没有返回值 就地反转</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; vec (arrayRever.rbegin(), arrayRever.rend()); <span class="comment">// 初始化反转</span></span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>C++</category>
-      </categories>
-  </entry>
-  <entry>
     <title>安装GN环境流程与命令</title>
     <url>/2020/09/12/GNGN-compile/</url>
     <content><![CDATA[<p>GN工具安装的命令介绍<br><a id="more"></a></p>
@@ -75,6 +56,25 @@
       </categories>
   </entry>
   <entry>
+    <title>C++容器</title>
+    <url>/2019/08/05/C-%E5%AE%B9%E5%99%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B0%8F%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<p>关于初学C++容器的的一些方法的简单记录</p>
+<a id="more"></a>
+<h1 id="容器的初始化与索引数据类型："><a href="#容器的初始化与索引数据类型：" class="headerlink" title="容器的初始化与索引数据类型："></a>容器的初始化与索引数据类型：</h1><h2 id="vector初始化"><a href="#vector初始化" class="headerlink" title="vector初始化"></a>vector初始化</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_vec&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;;</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_vec(<span class="number">10</span>,<span class="number">5</span>);<span class="comment">// 初始化10个5</span></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_vec(<span class="number">10</span>); <span class="comment">// 初始化10个位置</span></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;my_sec&#123;my_vec.begin()+<span class="number">2</span>,my_vec.end()<span class="number">-1</span>&#125;; <span class="comment">//通过my_vec进行初始化[2:-1)</span></span><br></pre></td></tr></table></figure>
+<h2 id="map初始化"><a href="#map初始化" class="headerlink" title="map初始化"></a>map初始化</h2> <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">map</span>&lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt; my_map&#123;&#123; , &#125; , &#123; , &#125;&#125;; <span class="comment">//map 存储pair 类型作为元素</span></span><br><span class="line"><span class="comment">// map 与python类似 my_map【】 索引可添加元素</span></span><br></pre></td></tr></table></figure>
+<h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><p>  对于容器的索引，例如vec[index]. index 是unsign类型，类型名字是size_t，<strong>当与int类型进行比较，以及运算是容易出错</strong>。<br>  <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"> <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; ans(<span class="number">10</span>,<span class="number">5</span>);</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_v&#123;ans.begin()+<span class="number">2</span>,ans.end()<span class="number">-5</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//会报错no matching function for call to 'min'   auto anss = min(5,ans.size()); ans.size()不是int类型 转化为int 才能比较。</span></span><br><span class="line"><span class="keyword">auto</span> anss = min(<span class="number">5</span>,ans.size());</span><br></pre></td></tr></table></figure></p>
+<h1 id="容器的增删改查加排序"><a href="#容器的增删改查加排序" class="headerlink" title="容器的增删改查加排序"></a>容器的增删改查加排序</h1><h2 id="添加元素"><a href="#添加元素" class="headerlink" title="添加元素"></a>添加元素</h2><p>  添加数据可以通过容器自带的类似于push_back(), insert()方法；或者inserter() 这样的泛型函数；<br>  <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; vec&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;;</span><br><span class="line"><span class="keyword">auto</span> it = vec.insert(vec.begin()+<span class="number">1</span>, <span class="number">10</span>);  <span class="comment">// 返回的it 是插入位置(10 所在的位置)的迭代器， 在第一个参数（迭代器）前面插入后面参数的内容</span></span><br><span class="line">it = vec.insert(vec.end(), <span class="number">3</span>, <span class="number">4</span>);    <span class="comment">//插入通过构造函数调用后两个参数的返回值（3个4）插入到vec 末尾</span></span><br><span class="line">it = vec.insert(vec.end(),vec2.begin(), vec2.end());   <span class="comment">// 将vec2插入到vec1里, 类似python 里面的extend</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="删除元素"><a href="#删除元素" class="headerlink" title="删除元素"></a>删除元素</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;::iterator  it_1;</span><br><span class="line"><span class="keyword">auto</span> it = vec.erase(it_1); <span class="comment">//删除迭代器所指的元素，返回删除元素位置后一位的迭代器。</span></span><br></pre></td></tr></table></figure>
+<h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><p>可以通过迭代器的解引用*it 进行索引和修改 也可以是下标索引，<strong>map索引的时候可能会添加心的pair</strong></p>
+<h2 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//  对于string vec 调用自己的find 方法</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> it = vec.find(target_val, start_index, end_index);  <span class="comment">// 从索引范围内查找第一个元素 返回元素所在index 若不在则返回比长度大得多的整数</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// find_first_of , find_last_of声明如下</span></span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">const</span> <span class="built_in">string</span>&amp; str, <span class="keyword">size_t</span> pos = npos) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">const</span> <span class="keyword">char</span>* s, <span class="keyword">size_t</span> pos = npos) <span class="keyword">const</span>;</span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">const</span> <span class="keyword">char</span>* s, <span class="keyword">size_t</span> pos, <span class="keyword">size_t</span> n) <span class="keyword">const</span>;</span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">char</span> c, <span class="keyword">size_t</span> pos = npos) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 对于vector 没有find 方法 需要调用 泛型函数 find</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> it = find(vec.begin(), vec.end(), target_val); <span class="comment">// 输入输出均为迭代器；与string index不同</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 对于map 查找可以用find 返回值是key 也可以用count 返回true false;</span></span><br></pre></td></tr></table></figure>
+<h2 id="容器最大值最小值的索引"><a href="#容器最大值最小值的索引" class="headerlink" title="容器最大值最小值的索引"></a>容器最大值最小值的索引</h2><p>通过返回最大或者最小值的迭代器，然后与begin()迭代器做差得到<br><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; v(<span class="number">10</span>);</span><br><span class="line"><span class="keyword">auto</span> it = max_element(v.begin(),v.end());</span><br><span class="line"><span class="keyword">int</span> index = it-v.begin();</span><br></pre></td></tr></table></figure></p>
+<h2 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h2><p>泛型函数sort(it.begin(), it.end(),my_sort);<br><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">sort(numbers.begin(),numbers.end(),my_sort);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">my_sort</span><span class="params">(<span class="keyword">int</span> A, intB)</span></span>&#123;</span><br><span class="line"><span class="keyword">return</span> A&lt;B;<span class="comment">//A靠前</span></span><br><span class="line">&#125;</span><br><span class="line">my_sort函数为成员函数时（成员函数默认第一个参数是*<span class="keyword">this</span>） 需要加<span class="keyword">static</span> 作为一般函数（没有<span class="keyword">this</span>参数）是不需要</span><br></pre></td></tr></table></figure></p>
+<h1 id="容器的泛型函数"><a href="#容器的泛型函数" class="headerlink" title="容器的泛型函数"></a>容器的泛型函数</h1><h2 id="反转"><a href="#反转" class="headerlink" title="反转"></a>反转</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; arrayRever&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;;</span><br><span class="line">reverse(arrayRever.begin(),arrayRever.end()); <span class="comment">//没有返回值 就地反转</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; vec (arrayRever.rbegin(), arrayRever.rend()); <span class="comment">// 初始化反转</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
+  </entry>
+  <entry>
     <title>C—的小问题</title>
     <url>/2019/08/05/C-%E9%81%87%E8%A7%81%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<p>介绍了 string 与char int char* 的转化，for 枚举类型，和INT_MAX</p>
@@ -90,6 +90,40 @@
 <h1 id="int类型的最大最小值"><a href="#int类型的最大最小值" class="headerlink" title="int类型的最大最小值"></a>int类型的最大最小值</h1><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">INT_MAX (INT32_MAX)</span><br><span class="line">INT_MIN (INT32_MIN)</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>C++</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>xgboost</title>
+    <url>/2019/09/03/xgboost/</url>
+    <content><![CDATA[<p>xgboost 节点值的选择与分裂</p>
+<a id="more"></a>
+<h1 id="xgboost-节点值的选择以及分裂方法的选择"><a href="#xgboost-节点值的选择以及分裂方法的选择" class="headerlink" title="xgboost 节点值的选择以及分裂方法的选择"></a>xgboost 节点值的选择以及分裂方法的选择</h1><p>在上篇文章里引用的图片上，没有对打分函数进行具体解释，本节具体说一下，今天面试问道为什么xgboost是二阶泰勒展开，我觉得是和这一部分有关。</p>
+<h2 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h2><p>xgboost 的损失函数</p>
+<h3 id="如何确定一个节点的值"><a href="#如何确定一个节点的值" class="headerlink" title="如何确定一个节点的值"></a>如何确定一个节点的值</h3><img src="/2019/09/03/xgboost/loss.png">
+<p>目标就是找到 f 使得上式达到最小，通过泰勒展开以后，得到下式。<br>其中需要注意一点 l作为loss 其自变量是$\hat y ^{(t-1)}$ 是泰勒展开中的$x_0$ 而f可以看作是增加量，即泰勒展开中的$\Delta x$ 所以得到下式，   $ y ^{(t-1)}$ 是常数<br><img src="/2019/09/03/xgboost/loss2.png"><br>省略与f 无关的项，得到下式：<br><img src="/2019/09/03/xgboost/loss3.png"></p>
+<p>又因为f 其实就是w ,所以整理得到按照节点划分的目标函数，最终这个二次函数直接求最值点，<strong>就是这个节点的w值。</strong></p>
+<h3 id="如何分裂节点"><a href="#如何分裂节点" class="headerlink" title="如何分裂节点"></a>如何分裂节点</h3><p>通过贪心算法，生成树时，计算左子树，右子树的误差和，和未分裂的进行比较，确定分裂是否合理，然后将每一种分裂，每一次可能进行遍历，进而选择最佳分裂</p>
+<p><a href="https://www.jianshu.com/p/8c62fb63fc1b" target="_blank" rel="noopener">参考</a></p>
+]]></content>
+      <categories>
+        <category>true</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>gn编译hello_world</title>
+    <url>/2020/09/17/gn%E7%BC%96%E8%AF%91hello-world/</url>
+    <content><![CDATA[<p>编译第一个hello,world</p>
+<a id="more"></a>
+<h1 id="使用GN-编译第一个hello，world"><a href="#使用GN-编译第一个hello，world" class="headerlink" title="使用GN 编译第一个hello，world"></a>使用GN 编译第一个hello，world</h1><p>创建一个工程目录temp，在工程目录里面创建hellow_world.cpp 文件并完成编写。切换到temp 目录下。</p>
+<p>在工程目录temp下,将下载的gn/文件夹下examples中的配置文件拷贝到当前目录，这个配置文件中包含BUILDCONFIG.gn等文件，属于对当前工程编译环境的设置，是gn编译的基础。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cp -rf gn/examples/simple_build/build ./</span><br></pre></td></tr></table></figure>
+<p>在工程目录中创建BUILD.gn文件，用来指定待编译的文件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">echo "executable(\"hello\") &#123; sources = [\"hello_world.cpp\"] &#125;" &gt; BUILD.gn</span><br></pre></td></tr></table></figure>
+<p>通过gn 命令 生成ninja</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gn gen out/default</span><br><span class="line"><span class="meta">#</span> ninja 编译生成exe</span><br><span class="line">ninja -C out/default -v </span><br><span class="line"><span class="meta">#</span> 运行exe</span><br><span class="line">./out/default/hello_world</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>GN工具</category>
       </categories>
   </entry>
   <entry>
@@ -115,23 +149,6 @@
       </categories>
   </entry>
   <entry>
-    <title>gn编译hello_world</title>
-    <url>/2020/09/17/gn%E7%BC%96%E8%AF%91hello-world/</url>
-    <content><![CDATA[<p>编译第一个hello,world</p>
-<a id="more"></a>
-<h1 id="使用GN-编译第一个hello，world"><a href="#使用GN-编译第一个hello，world" class="headerlink" title="使用GN 编译第一个hello，world"></a>使用GN 编译第一个hello，world</h1><p>创建一个工程目录temp，在工程目录里面创建hellow_world.cpp 文件并完成编写。切换到temp 目录下。</p>
-<p>在工程目录temp下,将下载的gn/文件夹下examples中的配置文件拷贝到当前目录，这个配置文件中包含BUILDCONFIG.gn等文件，属于对当前工程编译环境的设置，是gn编译的基础。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cp -rf gn/examples/simple_build/build ./</span><br></pre></td></tr></table></figure>
-<p>在工程目录中创建BUILD.gn文件，用来指定待编译的文件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">echo "executable(\"hello\") &#123; sources = [\"hello_world.cpp\"] &#125;" &gt; BUILD.gn</span><br></pre></td></tr></table></figure>
-<p>通过gn 命令 生成ninja</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gn gen out/default</span><br><span class="line"><span class="meta">#</span> ninja 编译生成exe</span><br><span class="line">ninja -C out/default -v </span><br><span class="line"><span class="meta">#</span> 运行exe</span><br><span class="line">./out/default/hello_world</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>GN工具</category>
-      </categories>
-  </entry>
-  <entry>
     <title>hexo_公式_图片</title>
     <url>/2019/08/07/hexo-%E5%85%AC%E5%BC%8F-%E5%9B%BE%E7%89%87/</url>
     <content><![CDATA[<p>向博客中添加图片和公式</p>
@@ -153,49 +170,6 @@
 ]]></content>
       <categories>
         <category>blog</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>xgboost</title>
-    <url>/2019/09/03/xgboost/</url>
-    <content><![CDATA[<p>xgboost 节点值的选择与分裂</p>
-<a id="more"></a>
-<h1 id="xgboost-节点值的选择以及分裂方法的选择"><a href="#xgboost-节点值的选择以及分裂方法的选择" class="headerlink" title="xgboost 节点值的选择以及分裂方法的选择"></a>xgboost 节点值的选择以及分裂方法的选择</h1><p>在上篇文章里引用的图片上，没有对打分函数进行具体解释，本节具体说一下，今天面试问道为什么xgboost是二阶泰勒展开，我觉得是和这一部分有关。</p>
-<h2 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h2><p>xgboost 的损失函数</p>
-<h3 id="如何确定一个节点的值"><a href="#如何确定一个节点的值" class="headerlink" title="如何确定一个节点的值"></a>如何确定一个节点的值</h3><img src="/2019/09/03/xgboost/loss.png">
-<p>目标就是找到 f 使得上式达到最小，通过泰勒展开以后，得到下式。<br>其中需要注意一点 l作为loss 其自变量是$\hat y ^{(t-1)}$ 是泰勒展开中的$x_0$ 而f可以看作是增加量，即泰勒展开中的$\Delta x$ 所以得到下式，   $ y ^{(t-1)}$ 是常数<br><img src="/2019/09/03/xgboost/loss2.png"><br>省略与f 无关的项，得到下式：<br><img src="/2019/09/03/xgboost/loss3.png"></p>
-<p>又因为f 其实就是w ,所以整理得到按照节点划分的目标函数，最终这个二次函数直接求最值点，<strong>就是这个节点的w值。</strong></p>
-<h3 id="如何分裂节点"><a href="#如何分裂节点" class="headerlink" title="如何分裂节点"></a>如何分裂节点</h3><p>通过贪心算法，生成树时，计算左子树，右子树的误差和，和未分裂的进行比较，确定分裂是否合理，然后将每一种分裂，每一次可能进行遍历，进而选择最佳分裂</p>
-<p><a href="https://www.jianshu.com/p/8c62fb63fc1b" target="_blank" rel="noopener">参考</a></p>
-]]></content>
-      <categories>
-        <category>true</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>动态规划</title>
-    <url>/2019/08/06/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</url>
-    <content><![CDATA[<p>应用动态规划解决队列问题<br><a id="more"></a></p>
-<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><blockquote>
-<p>计算最少出列多少位同学，使得剩下的同学排成合唱队形说明：N位同学站成一排，音乐老师要请其中的(N-K)位同学出列，使得剩下的K位同学排成合唱队形。<br>合唱队形是指这样的一种队形：设K位同学从左到右依次编号为1，2…，K，他们的身高分别为T1，T2，…，TK，   则他们的身高满足存在i（1&lt;=i&lt;=K）使得T1<t2<......<ti-1<ti>Ti+1&gt;……&gt;TK。<br>你的任务是，已知所有N位同学的身高，计算最少需要几位同学出列，可以使得剩下的同学排成合唱队形。</t2<......<ti-1<ti></p>
-</blockquote>
-<p>示例1</p>
-<blockquote>
-<p>8<br>186 186 150 200 160 130 197 200</p>
-</blockquote>
-<p>输出</p>
-<blockquote>
-<p>4</p>
-</blockquote>
-<h3 id="求解思路"><a href="#求解思路" class="headerlink" title="求解思路"></a>求解思路</h3><ol>
-<li>通过动态规划求解每个字符结尾的最大递增子字符串的长度，</li>
-<li>再反转数组，</li>
-<li>按照 1.步骤再进行一次</li>
-<li>两次叠加最大值减一即为最后队列的长度<br>代码：<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; dp(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;input,<span class="keyword">int</span> n)&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; list_(n,<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j=i<span class="number">-1</span>;j&gt;=<span class="number">0</span>;j--)&#123;</span><br><span class="line">                <span class="keyword">if</span>(input[i]&gt;input[j])</span><br><span class="line">                    list_[i]=max(list_[i],list_[j]+<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">return</span> list_;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n;</span><br><span class="line">    <span class="keyword">while</span>(<span class="built_in">cin</span>&gt;&gt;n)&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; input(n);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">            <span class="built_in">cin</span>&gt;&gt;input[i];</span><br><span class="line">        &#125;</span><br><span class="line">     <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; front = dp(input,n);</span><br><span class="line">     reverse(input.begin(),input.end());</span><br><span class="line">     <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; back = dp(input, n);</span><br><span class="line">     <span class="keyword">int</span> max_ = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">            <span class="keyword">int</span> temp =front[i]+back[n-i<span class="number">-1</span>];</span><br><span class="line">             <span class="keyword">if</span>(temp&gt;max_) max_=temp;</span><br><span class="line">     &#125;    </span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;(n-(max_<span class="number">-1</span>))&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">     &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ol>
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
       </categories>
   </entry>
   <entry>
@@ -249,6 +223,32 @@
 ]]></content>
       <categories>
         <category>机器学习</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>动态规划</title>
+    <url>/2019/08/06/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</url>
+    <content><![CDATA[<p>应用动态规划解决队列问题<br><a id="more"></a></p>
+<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><blockquote>
+<p>计算最少出列多少位同学，使得剩下的同学排成合唱队形说明：N位同学站成一排，音乐老师要请其中的(N-K)位同学出列，使得剩下的K位同学排成合唱队形。<br>合唱队形是指这样的一种队形：设K位同学从左到右依次编号为1，2…，K，他们的身高分别为T1，T2，…，TK，   则他们的身高满足存在i（1&lt;=i&lt;=K）使得T1<t2<......<ti-1<ti>Ti+1&gt;……&gt;TK。<br>你的任务是，已知所有N位同学的身高，计算最少需要几位同学出列，可以使得剩下的同学排成合唱队形。</t2<......<ti-1<ti></p>
+</blockquote>
+<p>示例1</p>
+<blockquote>
+<p>8<br>186 186 150 200 160 130 197 200</p>
+</blockquote>
+<p>输出</p>
+<blockquote>
+<p>4</p>
+</blockquote>
+<h3 id="求解思路"><a href="#求解思路" class="headerlink" title="求解思路"></a>求解思路</h3><ol>
+<li>通过动态规划求解每个字符结尾的最大递增子字符串的长度，</li>
+<li>再反转数组，</li>
+<li>按照 1.步骤再进行一次</li>
+<li>两次叠加最大值减一即为最后队列的长度<br>代码：<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; dp(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;input,<span class="keyword">int</span> n)&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; list_(n,<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j=i<span class="number">-1</span>;j&gt;=<span class="number">0</span>;j--)&#123;</span><br><span class="line">                <span class="keyword">if</span>(input[i]&gt;input[j])</span><br><span class="line">                    list_[i]=max(list_[i],list_[j]+<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">return</span> list_;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n;</span><br><span class="line">    <span class="keyword">while</span>(<span class="built_in">cin</span>&gt;&gt;n)&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; input(n);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">            <span class="built_in">cin</span>&gt;&gt;input[i];</span><br><span class="line">        &#125;</span><br><span class="line">     <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; front = dp(input,n);</span><br><span class="line">     reverse(input.begin(),input.end());</span><br><span class="line">     <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; back = dp(input, n);</span><br><span class="line">     <span class="keyword">int</span> max_ = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">            <span class="keyword">int</span> temp =front[i]+back[n-i<span class="number">-1</span>];</span><br><span class="line">             <span class="keyword">if</span>(temp&gt;max_) max_=temp;</span><br><span class="line">     &#125;    </span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;(n-(max_<span class="number">-1</span>))&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">     &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
       </categories>
   </entry>
 </search>
