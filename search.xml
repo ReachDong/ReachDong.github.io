@@ -1,91 +1,254 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title><![CDATA[gn编译hello_world]]></title>
-    <url>%2F2020%2F09%2F17%2Fgn%E7%BC%96%E8%AF%91hello-world%2F</url>
-    <content type="text"><![CDATA[编译第一个hello,world 使用GN 编译第一个hello，world创建一个工程目录temp，在工程目录里面创建hellow_world.cpp 文件并完成编写。切换到temp 目录下。 在工程目录temp下,将下载的gn/文件夹下examples中的配置文件拷贝到当前目录，这个配置文件中包含BUILDCONFIG.gn等文件，属于对当前工程编译环境的设置，是gn编译的基础。 1cp -rf gn/examples/simple_build/build ./ 在工程目录中创建BUILD.gn文件，用来指定待编译的文件 1echo "executable(\"hello\") &#123; sources = [\"hello_world.cpp\"] &#125;" &gt; BUILD.gn 通过gn 命令 生成ninja 12345gn gen out/default# ninja 编译生成exeninja -C out/default -v # 运行exe./out/default/hello_world]]></content>
+    <title>C++容器</title>
+    <url>/2019/08/05/C-%E5%AE%B9%E5%99%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B0%8F%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<p>关于初学C++容器的的一些方法的简单记录</p>
+<a id="more"></a>
+<h1 id="容器的初始化与索引数据类型："><a href="#容器的初始化与索引数据类型：" class="headerlink" title="容器的初始化与索引数据类型："></a>容器的初始化与索引数据类型：</h1><h2 id="vector初始化"><a href="#vector初始化" class="headerlink" title="vector初始化"></a>vector初始化</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_vec&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;;</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_vec(<span class="number">10</span>,<span class="number">5</span>);<span class="comment">// 初始化10个5</span></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_vec(<span class="number">10</span>); <span class="comment">// 初始化10个位置</span></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;my_sec&#123;my_vec.begin()+<span class="number">2</span>,my_vec.end()<span class="number">-1</span>&#125;; <span class="comment">//通过my_vec进行初始化[2:-1)</span></span><br></pre></td></tr></table></figure>
+<h2 id="map初始化"><a href="#map初始化" class="headerlink" title="map初始化"></a>map初始化</h2> <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">map</span>&lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt; my_map&#123;&#123; , &#125; , &#123; , &#125;&#125;; <span class="comment">//map 存储pair 类型作为元素</span></span><br><span class="line"><span class="comment">// map 与python类似 my_map【】 索引可添加元素</span></span><br></pre></td></tr></table></figure>
+<h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><p>  对于容器的索引，例如vec[index]. index 是unsign类型，类型名字是size_t，<strong>当与int类型进行比较，以及运算是容易出错</strong>。<br>  <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"> <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; ans(<span class="number">10</span>,<span class="number">5</span>);</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; my_v&#123;ans.begin()+<span class="number">2</span>,ans.end()<span class="number">-5</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//会报错no matching function for call to 'min'   auto anss = min(5,ans.size()); ans.size()不是int类型 转化为int 才能比较。</span></span><br><span class="line"><span class="keyword">auto</span> anss = min(<span class="number">5</span>,ans.size());</span><br></pre></td></tr></table></figure></p>
+<h1 id="容器的增删改查加排序"><a href="#容器的增删改查加排序" class="headerlink" title="容器的增删改查加排序"></a>容器的增删改查加排序</h1><h2 id="添加元素"><a href="#添加元素" class="headerlink" title="添加元素"></a>添加元素</h2><p>  添加数据可以通过容器自带的类似于push_back(), insert()方法；或者inserter() 这样的泛型函数；<br>  <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; vec&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;;</span><br><span class="line"><span class="keyword">auto</span> it = vec.insert(vec.begin()+<span class="number">1</span>, <span class="number">10</span>);  <span class="comment">// 返回的it 是插入位置(10 所在的位置)的迭代器， 在第一个参数（迭代器）前面插入后面参数的内容</span></span><br><span class="line">it = vec.insert(vec.end(), <span class="number">3</span>, <span class="number">4</span>);    <span class="comment">//插入通过构造函数调用后两个参数的返回值（3个4）插入到vec 末尾</span></span><br><span class="line">it = vec.insert(vec.end(),vec2.begin(), vec2.end());   <span class="comment">// 将vec2插入到vec1里, 类似python 里面的extend</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="删除元素"><a href="#删除元素" class="headerlink" title="删除元素"></a>删除元素</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;::iterator  it_1;</span><br><span class="line"><span class="keyword">auto</span> it = vec.erase(it_1); <span class="comment">//删除迭代器所指的元素，返回删除元素位置后一位的迭代器。</span></span><br></pre></td></tr></table></figure>
+<h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><p>可以通过迭代器的解引用*it 进行索引和修改 也可以是下标索引，<strong>map索引的时候可能会添加心的pair</strong></p>
+<h2 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//  对于string vec 调用自己的find 方法</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> it = vec.find(target_val, start_index, end_index);  <span class="comment">// 从索引范围内查找第一个元素 返回元素所在index 若不在则返回比长度大得多的整数</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// find_first_of , find_last_of声明如下</span></span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">const</span> <span class="built_in">string</span>&amp; str, <span class="keyword">size_t</span> pos = npos) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">const</span> <span class="keyword">char</span>* s, <span class="keyword">size_t</span> pos = npos) <span class="keyword">const</span>;</span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">const</span> <span class="keyword">char</span>* s, <span class="keyword">size_t</span> pos, <span class="keyword">size_t</span> n) <span class="keyword">const</span>;</span><br><span class="line"><span class="keyword">size_t</span> find_last_of (<span class="keyword">char</span> c, <span class="keyword">size_t</span> pos = npos) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 对于vector 没有find 方法 需要调用 泛型函数 find</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> it = find(vec.begin(), vec.end(), target_val); <span class="comment">// 输入输出均为迭代器；与string index不同</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 对于map 查找可以用find 返回值是key 也可以用count 返回true false;</span></span><br></pre></td></tr></table></figure>
+<h2 id="容器最大值最小值的索引"><a href="#容器最大值最小值的索引" class="headerlink" title="容器最大值最小值的索引"></a>容器最大值最小值的索引</h2><p>通过返回最大或者最小值的迭代器，然后与begin()迭代器做差得到<br><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; v(<span class="number">10</span>);</span><br><span class="line"><span class="keyword">auto</span> it = max_element(v.begin(),v.end());</span><br><span class="line"><span class="keyword">int</span> index = it-v.begin();</span><br></pre></td></tr></table></figure></p>
+<h2 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h2><p>泛型函数sort(it.begin(), it.end(),my_sort);<br><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">sort(numbers.begin(),numbers.end(),my_sort);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">my_sort</span><span class="params">(<span class="keyword">int</span> A, intB)</span></span>&#123;</span><br><span class="line"><span class="keyword">return</span> A&lt;B;<span class="comment">//A靠前</span></span><br><span class="line">&#125;</span><br><span class="line">my_sort函数为成员函数时（成员函数默认第一个参数是*<span class="keyword">this</span>） 需要加<span class="keyword">static</span> 作为一般函数（没有<span class="keyword">this</span>参数）是不需要</span><br></pre></td></tr></table></figure></p>
+<h1 id="容器的泛型函数"><a href="#容器的泛型函数" class="headerlink" title="容器的泛型函数"></a>容器的泛型函数</h1><h2 id="反转"><a href="#反转" class="headerlink" title="反转"></a>反转</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; arrayRever&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;;</span><br><span class="line">reverse(arrayRever.begin(),arrayRever.end()); <span class="comment">//没有返回值 就地反转</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; vec (arrayRever.rbegin(), arrayRever.rend()); <span class="comment">// 初始化反转</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>C—的小问题</title>
+    <url>/2019/08/05/C-%E9%81%87%E8%A7%81%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<p>介绍了 string 与char int char* 的转化，for 枚举类型，和INT_MAX</p>
+<a id="more"></a>
+<h1 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h1><h2 id="string转const-char"><a href="#string转const-char" class="headerlink" title="string转const char*"></a>string转const char*</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">string</span> s =<span class="string">"abc"</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span>* c_s = s.c_str();</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">string</span> str=“world”;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *p = str.c_str(); <span class="comment">// 要加const或者等号右边用char*</span></span><br><span class="line"> <span class="keyword">const</span> <span class="keyword">char</span> *p = str.data(); <span class="comment">// data():与c_str()类似，但是返回的数组不以空字符终止</span></span><br></pre></td></tr></table></figure>
+<h2 id="const-char-转string"><a href="#const-char-转string" class="headerlink" title="const char*转string"></a>const char*转string</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">char</span>* c_s =<span class="string">"abc"</span>;</span><br><span class="line"><span class="function"><span class="built_in">string</span> <span class="title">s</span><span class="params">(c_s)</span></span>;</span><br></pre></td></tr></table></figure>
+<h2 id="string转char"><a href="#string转char" class="headerlink" title="string转char*"></a>string转char*</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">string</span> s =<span class="string">"abc"</span>;</span><br><span class="line"><span class="keyword">char</span>* c;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> len = s.length();</span><br><span class="line">c =<span class="keyword">new</span> <span class="keyword">char</span>[len+<span class="number">1</span>];</span><br><span class="line"><span class="built_in">strcpy</span>(c,s.c_str());</span><br></pre></td></tr></table></figure>
+<h2 id="char-转string"><a href="#char-转string" class="headerlink" title="char*转string"></a>char*转string</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">char</span>* cpc =<span class="string">"abc"</span>;</span><br><span class="line"><span class="keyword">char</span>* pc =<span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">100</span>];<span class="comment">//足够长</span></span><br><span class="line"><span class="built_in">strcpy</span>(pc,cpc);</span><br></pre></td></tr></table></figure>
+<h2 id="数字转string"><a href="#数字转string" class="headerlink" title="数字转string"></a>数字转string</h2><p>auto it =  to_string(input) it可以是浮点数，input是char类型是 会得到对应的asicc码；</p>
+<h2 id="char-转string-1"><a href="#char-转string-1" class="headerlink" title="char 转string"></a>char 转string</h2><p>只能通过初始化string 得到单个字母的string类型<br><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="built_in">string</span> <span class="title">str</span><span class="params">(<span class="number">1</span>,<span class="string">'a'</span>)</span></span></span><br><span class="line"><span class="function"><span class="built_in">string</span> str</span>; str.push_back(<span class="string">'a'</span>);</span><br><span class="line"><span class="built_in">stringstream</span> ss;</span><br><span class="line">ss&lt;&lt;<span class="string">'a'</span>;<span class="built_in">string</span> str2 = ss.str();</span><br></pre></td></tr></table></figure></p>
+<h1 id="for-枚举用法"><a href="#for-枚举用法" class="headerlink" title="for 枚举用法"></a>for 枚举用法</h1><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">vector</span> &lt;<span class="keyword">int</span>&gt; vec(<span class="number">10.0</span>);</span><br><span class="line"><span class="built_in">string</span> str=<span class="string">"abcdefg"</span>;</span><br><span class="line"><span class="built_in">map</span>&lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt; my_map=&#123;&#123;<span class="string">"a"</span>, <span class="number">2</span>&#125;,&#123;<span class="string">"b"</span>, <span class="number">3</span>&#125;&#125;;</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">auto</span> &amp;it : vec)&#123;</span><br><span class="line"><span class="built_in">cout</span>&lt;&lt;it&lt;&lt;<span class="built_in">endl</span>; <span class="comment">// 返回的是引用 可以用来修改容器内内容</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">auto</span> it : str)&#123;</span><br><span class="line"><span class="built_in">cout</span>&lt;&lt;it&lt;&lt;<span class="built_in">endl</span>; <span class="comment">// 返回的是char</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">auto</span> it : my_map)&#123;</span><br><span class="line"><span class="built_in">cout</span>&lt;&lt;it.first&lt;&lt;it.second&lt;&lt;<span class="built_in">endl</span>;<span class="comment">//返回的是pair变量</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="int类型的最大最小值"><a href="#int类型的最大最小值" class="headerlink" title="int类型的最大最小值"></a>int类型的最大最小值</h1><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">INT_MAX (INT32_MAX)</span><br><span class="line">INT_MIN (INT32_MIN)</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>GBDT与XGboost</title>
+    <url>/2019/08/17/boosting/</url>
+    <content><![CDATA[<p>对这两个算法进行简单的记录<br><a id="more"></a></p>
+<h1 id="GBDT"><a href="#GBDT" class="headerlink" title="GBDT"></a>GBDT</h1><p>思路： 使用多个cart树，对数据进行拟合，每个树都用来拟合上一步的负梯度（后面解释），最后将每一个cart树的结果累加（加权），得到预测结果。<br> 需要理解的几个问题：</p>
+<ul>
+<li>为什么拟合负梯度，和拟合误差一样吗？（回归问题）</li>
+<li>如何拟合负梯度</li>
+<li>如何确定每个叶子节点的值</li>
+<li>加权求和是什么意思</li>
+<li>正则化的问题</li>
+</ul>
+<h2 id="拟合负梯度（解决前两个问题）"><a href="#拟合负梯度（解决前两个问题）" class="headerlink" title="拟合负梯度（解决前两个问题）"></a>拟合负梯度（解决前两个问题）</h2><p>首先对于一个函数来说，沿着负梯度方向会让函数值降低，对于一般问题，损失函数L是关于参数$\theta$ 的函数，一般做法是对参数求导，然后更新参数，得到更好的决策函数，进而降低误差。对于GBDT来说我们提升的不是参数$\theta$ 而是决策函数本身（换句话说参数就是树本身），具体来说。针对损失函数的：<br>一般方法的损失更新：</p>
+<script type="math/tex; mode=display">L(y_i, f(x_i,\theta^{[i]})=L(y_i, f(x_i,\theta^{[i-1]} - \left. \frac{dL}{d\theta} \right| _{\theta={\theta^{[i-1]}}})</script><p>对于GBDT的损失更新：</p>
+<script type="math/tex; mode=display">L(y_i, f_t(x_i)=L(y_i, f_{t-1}(x_i) - \left. \frac{dL}{df} \right|_{f={f_{t-1}}})</script><p>所以构建GBDT树的过程：<br>初始：假定初始的$f_0$ 是把所有的输入都预测为0，那么通过损失函数对f的导数的解析式可以得到负梯度的方程$- \left. \frac{dL}{df} \right|_{f={f_0}}$ ,_ 输入$f_{0}$ 就是初始cart树预测的结果（也就是0）,<br>构建第二棵树： 在上一步的基础上计算得到了负梯度，将负梯度作为新的label ,按照cart 树的构造方法，得到第二棵树，并为每个叶子节点确定输出的值（后面介绍）。然后更新下一个负梯度$- \left. \frac{dL}{df} \right|_{f={f_1}}$ ,_ 其中$f_1$ 是这第二棵树的预测结果。用新的到的负梯度作为新的label ,<br>如此迭代下去……<br><strong>通过导数的计算已经包含了L的信息 也就是原始label 的信息。</strong><br>在来说一下误差和负梯度的问题（这里的误差是只真实y与预测的$\hat y$ 的差的绝对值 ），当L损失函数为均方误差时，L对f 的导数就是这个误差，所以用mse 作为损失函数的时候，每次更新的负梯度就是求这棵树对$x_i$ 的预测与这棵树的输入 label 的差的绝对值。</p>
+<p> <strong>针对分类问题也是一样的，二分类问题可以看作是对于每一个类别概率的回归，每个叶子节点的值代表一个连续值，通过类似sigmoid转化成概率，此时对于目标函数一般使用对数似然损失函数$y\epsilon \{-1,1\}$</strong></p>
+<script type="math/tex; mode=display">L(y,f(x))=log(1+exp(-yf(x)))</script><p> <strong>多分类 同理 类似softmax</strong><br> <strong>用一阶段泰勒展开式，更新参数或者方程，就是沿着负梯度更新，二阶泰勒展开呢 就是用负梯度除以二阶导数的方向更新，GBDT只用了一阶，Xgboost用的二阶</strong></p>
+ <img src="/2019/08/17/boosting/niudun.png">
+<h2 id="如何确定每个叶子节点的值"><a href="#如何确定每个叶子节点的值" class="headerlink" title="如何确定每个叶子节点的值"></a>如何确定每个叶子节点的值</h2><p> 找到一个值c，当这个叶子节点中的所有样本都被预测为c时，对于该叶子节点中的每个样本x，计算其误差，使得误差的累加和最小，那么c为这个叶子节点的值。</p>
+<h2 id="如何正则（权重）"><a href="#如何正则（权重）" class="headerlink" title="如何正则（权重）"></a>如何正则（权重）</h2><p><strong>加入正则项：对于个树，给一个权重v（0到1之间）, 预测结果要乘以v ，才是该树的最终预测结果。</strong><br> 抽样，确定超参数（树的深度等参数）<br> cart树的剪枝等</p>
+  <img src="/2019/08/17/boosting/gbdt.png" title="（算法流程）">
+<h2 id="GBDT与随机森林"><a href="#GBDT与随机森林" class="headerlink" title="GBDT与随机森林"></a>GBDT与随机森林</h2><ol>
+<li>组成随机森林的树可以是分类树，也可以是回归树；而GBDT只能由回归树组成。</li>
+<li>组成随机森林的树可以并行生成；而GBDT只能是串行生成。</li>
+<li>对于最终的输出结果而言，随机森林采用多数投票等；而GBDT则是将所有结果累加起来，或者加权累加起来。</li>
+<li>随机森林对异常值不敏感；GBDT对异常值非常敏感。原因是当前的错误会延续给下一棵树。 </li>
+<li>随机森林对训练集一视同仁；GBDT是基于权值的弱分类器的集成。</li>
+<li>随机森林是通过减少模型方差提高性能；GBDT是通过减少模型偏差提高性能。</li>
+<li>RF不需要进行数据预处理，即特征归一化。而GBDT则需要进行特征归一化。</li>
+</ol>
+<p><strong>为什么RF的树深度比GBDT深很多</strong><br>对于Bagging算法来说，由于我们会并行地训练很多不同的分类器的目的就是降低这个方差(variance) ,因为采用了相互独立的基分类器多了以后，h的值自然就会靠近.所以对于每个基分类器来说，目标就是如何降低这个偏差（bias),所以我们会采用深度很深甚至不剪枝的决策树。</p>
+<p>对于Boosting来说，每一步我们都会在上一轮的基础上更加拟合原数据，所以可以保证偏差（bias）,所以对于每个基分类器来说，问题就在于如何选择variance更小的分类器，即更简单的分类器，所以我们选择了深度很浅的决策树</p>
+<h1 id="xgboost"><a href="#xgboost" class="headerlink" title="xgboost"></a>xgboost</h1><p>思路与GBDT类似，可以说是在基础上更新的新方法，加入了正则，二阶泰勒展开信息等，具体差别后面总结。</p>
+<h2 id="目标函数与正则项"><a href="#目标函数与正则项" class="headerlink" title="目标函数与正则项"></a>目标函数与正则项</h2><p>loss 函数由二阶泰勒展开近似代替，<br><img src="/2019/08/17/boosting/loss.png"><br><img src="/2019/08/17/boosting/loss2.png"><br><img src="/2019/08/17/boosting/loss3.png"><br>通过求目标函数（二次函数）的极值点的到$L $ 的最小值，以此作为打分函数的依据（分裂节点的依据）。</p>
+<p>在GBDT原有的loss 的基础上，增加了正则项：<br><img src="/2019/08/17/boosting/xgloss.png"></p>
+<h2 id="算法流程"><a href="#算法流程" class="headerlink" title="算法流程"></a>算法流程</h2><p>与GBDT一样，不同点是算法的目标函数，以及分裂每个节点的方法。<br>和传统的boosting tree模型一样，xgboost的提升模型也是采用的残差（或梯度负方向），不同的是分裂结点选取的时候不一定是最小平方损失。<br><img src="/2019/08/17/boosting/xgboost.png"></p>
+<h2 id="对于稀疏值，缺失值"><a href="#对于稀疏值，缺失值" class="headerlink" title="对于稀疏值，缺失值"></a>对于稀疏值，缺失值</h2><p>通过分别计算假设其属于$G_L$ 或者属于$G_R$ 选择最合适的。</p>
+<h2 id="GBDT-与-xgboost"><a href="#GBDT-与-xgboost" class="headerlink" title="GBDT 与 xgboost"></a>GBDT 与 xgboost</h2><p>xgboost 支持自定义目标函数 只要二阶可导就行。</p>
+<h2 id="怎么防过拟合"><a href="#怎么防过拟合" class="headerlink" title="怎么防过拟合"></a>怎么防过拟合</h2><p>目标函数中的正则项，行抽样，列抽样，shrinkage（在一个树结束的结果上乘以一个0-1之间的数）</p>
+<h2 id="xgboost与深度学习对比"><a href="#xgboost与深度学习对比" class="headerlink" title="xgboost与深度学习对比"></a>xgboost与深度学习对比</h2><p>同的机器学习模型适用于不同类型的任务。深度神经网络通过对时空位置建模，能够很好地捕获图像、语音、文本等高维数据。而基于树模型的XGBoost则能很好地处理表格数据，同时还拥有一些深度神经网络所没有的特性（如：模型的可解释性、输入数据的不变性、更易于调参等）。</p>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>build_blog</title>
+    <url>/2019/08/05/build-blog/</url>
+    <content><![CDATA[<p>基于hexo github 搭建主题为nextT的博客<br><a id="more"></a></p>
+<h1 id="github-搭建blog"><a href="#github-搭建blog" class="headerlink" title="github 搭建blog"></a>github 搭建blog</h1><h2 id="创建github-库"><a href="#创建github-库" class="headerlink" title="创建github 库"></a>创建github 库</h2><p>创建于用户名相同的github库 命名为user_name.github.io</p>
+<h2 id="安装Node-js"><a href="#安装Node-js" class="headerlink" title="安装Node.js"></a>安装Node.js</h2><p>方法百度</p>
+<h2 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h2><p>更换nmp 为淘宝源<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ npm config set registry https://registry.npm.taobao.org/</span><br><span class="line"></span><br><span class="line">$ npm config get registry</span><br></pre></td></tr></table></figure></p>
+<p>安装 hexo<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install hexo -g</span><br></pre></td></tr></table></figure></p>
+<h2 id="创建hexo文件夹"><a href="#创建hexo文件夹" class="headerlink" title="创建hexo文件夹"></a>创建hexo文件夹</h2><p>定位到自己创建的blog 文件夹<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/blog $ hexo init</span><br></pre></td></tr></table></figure></p>
+<p>安装一些组件<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ nmp install</span><br></pre></td></tr></table></figure></p>
+<h2 id="将Hexo-与github连接"><a href="#将Hexo-与github连接" class="headerlink" title="将Hexo 与github连接"></a>将Hexo 与github连接</h2><p>设置好git, 可百度方法<br>将blog 文件夹下面的站点配置文件_config.yml 进行修改<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">eploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: git@github.com:user_name/user_name.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure></p>
+<h2 id="拷贝主题NexT"><a href="#拷贝主题NexT" class="headerlink" title="拷贝主题NexT"></a>拷贝主题<a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="noopener">NexT</a></h2><p>通过git clone 命令进行， 主题会被放在theme 文件夹下<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cd your-hexo-site</span><br><span class="line">$ git clone https://github.com/iissnan/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure></p>
+<h2 id="启动主题"><a href="#启动主题" class="headerlink" title="启动主题"></a>启动主题</h2><p>与所有 Hexo 主题启用的模式一样。 当 克隆/下载 完成后，打开 站点配置文件， 找到 theme 字段，并将其值更改为 next</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">theme: next</span><br></pre></td></tr></table></figure>
+<h2 id="配置主题"><a href="#配置主题" class="headerlink" title="配置主题"></a>配置主题</h2><p>见链接 <a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="noopener">NexT</a></p>
+<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><h2 id="文件内容与文件目录介绍"><a href="#文件内容与文件目录介绍" class="headerlink" title="文件内容与文件目录介绍"></a>文件内容与文件目录介绍</h2><p>hexo 目录中_config.yml 为站点配置文件，source/_post/ 文件夹是存放.md静态文件的目录，其中的.md文件的开头如下<br>其中第三行左边的是类别的关键字（类别的应为就是categoties），右边是具体的类别,不同文件中冒号，左边的是固定的，右边根据需要写所属类别。<br>改模板在\blog\scaffolds\post.md中<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">title: build_blog</span><br><span class="line">date: 2019-08-05 21:43:01</span><br><span class="line">categories: &quot;blog&quot;</span><br></pre></td></tr></table></figure></p>
+<h2 id="hexo-常用命令"><a href="#hexo-常用命令" class="headerlink" title="hexo 常用命令"></a>hexo 常用命令</h2><p><strong>hexo 的所有操作都在git bash 上进行 并且定位在/blog 目录下</strong><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo g //生成静态网页并存储在public文件夹下</span><br><span class="line">hexo clean // 删除上述文件夹下的文件</span><br><span class="line">hexo s -p 5000 //指定本地端口5000 本地查看网页</span><br><span class="line">hexo d 上传网页 将public/2019...文件夹下的静态网页上传github</span><br></pre></td></tr></table></figure></p>
+]]></content>
+      <categories>
+        <category>blog</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>安装GN环境流程与命令</title>
+    <url>/2020/09/12/GNGN-compile/</url>
+    <content><![CDATA[<p>GN工具安装的命令介绍<br><a id="more"></a></p>
+<h1 id="GN工具的安装"><a href="#GN工具的安装" class="headerlink" title="GN工具的安装"></a>GN工具的安装</h1><h2 id="命令如下"><a href="#命令如下" class="headerlink" title="命令如下"></a>命令如下</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span> 安装C++环境</span><br><span class="line">sudo apt-get install gcc</span><br><span class="line"><span class="meta">#</span> g++安装失败，提示依赖就换源，https://mirrors.tuna.tsinghua.edu.cn/</span><br><span class="line">sudo apt-get install g++</span><br><span class="line"><span class="meta">#</span> 查看安装结果</span><br><span class="line">gcc --version</span><br><span class="line">g++ --version</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span>#################################################################</span><br><span class="line"><span class="meta">#</span> 安装依赖 re2c</span><br><span class="line">apt-get install re2c</span><br><span class="line">re</span><br><span class="line">2c --version  #查看安装的版本</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span>################################################################</span><br><span class="line"><span class="meta">#</span> 下载ninjia</span><br><span class="line">git clone https://github.com/ninja-build/ninja.git</span><br><span class="line"><span class="meta">#</span> 执行编译脚本</span><br><span class="line">./configure.py --bootstrap</span><br><span class="line"><span class="meta">#</span> 放如系统文件夹下</span><br><span class="line">sudo cp ./ninja  /usr/bin </span><br><span class="line"><span class="meta">#</span> 查看是否成功</span><br><span class="line">ninja --version</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span>################################################################</span><br><span class="line"><span class="meta">#</span> 安装clang</span><br><span class="line">sudo apt-get install clang</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span>################################################################</span><br><span class="line"><span class="meta">#</span> 安装gn  可选：https://github.com/timniederhausen/gn</span><br><span class="line">git clone https://chromium.googlesource.com/chromium/src/tools/gn</span><br><span class="line"><span class="meta">#</span> 执行编译脚本</span><br><span class="line">./build/gen.py</span><br><span class="line"><span class="meta">#</span>ninjia  构建  编译结束后，gn程序就在gn/out目录中</span><br><span class="line">ninja -C out</span><br><span class="line"><span class="meta">#</span> 结果复制到系统目录</span><br><span class="line">sudo cp ./out/gn /usr/bin</span><br><span class="line"><span class="meta">#</span> 查看是否成功</span><br><span class="line">gn --version</span><br><span class="line">1834 (09fffae49)</span><br></pre></td></tr></table></figure>
+]]></content>
       <categories>
         <category>GN工具</category>
       </categories>
   </entry>
   <entry>
-    <title><![CDATA[安装GN环境流程与命令]]></title>
-    <url>%2F2020%2F09%2F12%2FGNGN-compile%2F</url>
-    <content type="text"><![CDATA[GN工具安装的命令介绍 GN工具的安装命令如下12345678910111213141516171819202122232425262728293031323334353637383940# 安装C++环境sudo apt-get install gcc# g++安装失败，提示依赖就换源，https://mirrors.tuna.tsinghua.edu.cn/sudo apt-get install g++# 查看安装结果gcc --versiong++ --version################################################################### 安装依赖 re2capt-get install re2cre2c --version #查看安装的版本################################################################## 下载ninjiagit clone https://github.com/ninja-build/ninja.git# 执行编译脚本./configure.py --bootstrap# 放如系统文件夹下sudo cp ./ninja /usr/bin # 查看是否成功ninja --version################################################################## 安装clangsudo apt-get install clang################################################################## 安装gn 可选：https://github.com/timniederhausen/gngit clone https://chromium.googlesource.com/chromium/src/tools/gn# 执行编译脚本./build/gen.py#ninjia 构建 编译结束后，gn程序就在gn/out目录中ninja -C out# 结果复制到系统目录sudo cp ./out/gn /usr/bin# 查看是否成功gn --version1834 (09fffae49)]]></content>
+    <title>gn编译hello_world</title>
+    <url>/2020/09/17/gn%E7%BC%96%E8%AF%91hello-world/</url>
+    <content><![CDATA[<p>编译第一个hello,world</p>
+<a id="more"></a>
+<h1 id="使用GN-编译第一个hello，world"><a href="#使用GN-编译第一个hello，world" class="headerlink" title="使用GN 编译第一个hello，world"></a>使用GN 编译第一个hello，world</h1><p>创建一个工程目录temp，在工程目录里面创建hellow_world.cpp 文件并完成编写。切换到temp 目录下。</p>
+<p>在工程目录temp下,将下载的gn/文件夹下examples中的配置文件拷贝到当前目录，这个配置文件中包含BUILDCONFIG.gn等文件，属于对当前工程编译环境的设置，是gn编译的基础。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cp -rf gn/examples/simple_build/build ./</span><br></pre></td></tr></table></figure>
+<p>在工程目录中创建BUILD.gn文件，用来指定待编译的文件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">echo "executable(\"hello\") &#123; sources = [\"hello_world.cpp\"] &#125;" &gt; BUILD.gn</span><br></pre></td></tr></table></figure>
+<p>通过gn 命令 生成ninja</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gn gen out/default</span><br><span class="line"><span class="meta">#</span> ninja 编译生成exe</span><br><span class="line">ninja -C out/default -v </span><br><span class="line"><span class="meta">#</span> 运行exe</span><br><span class="line">./out/default/hello_world</span><br></pre></td></tr></table></figure>
+]]></content>
       <categories>
         <category>GN工具</category>
       </categories>
   </entry>
   <entry>
-    <title><![CDATA[xgboost]]></title>
-    <url>%2F2019%2F09%2F03%2Fxgboost%2F</url>
-    <content type="text"><![CDATA[xgboost 节点值的选择与分裂 xgboost 节点值的选择以及分裂方法的选择在上篇文章里引用的图片上，没有对打分函数进行具体解释，本节具体说一下，今天面试问道为什么xgboost是二阶泰勒展开，我觉得是和这一部分有关。 损失函数xgboost 的损失函数 如何确定一个节点的值 目标就是找到 f 使得上式达到最小，通过泰勒展开以后，得到下式。其中需要注意一点 l作为loss 其自变量是$\hat y ^{(t-1)}$ 是泰勒展开中的$x_0$ 而f可以看作是增加量，即泰勒展开中的$\Delta x$ 所以得到下式， $ y ^{(t-1)}$ 是常数省略与f 无关的项，得到下式： 又因为f 其实就是w ,所以整理得到按照节点划分的目标函数，最终这个二次函数直接求最值点，就是这个节点的w值。 如何分裂节点通过贪心算法，生成树时，计算左子树，右子树的误差和，和未分裂的进行比较，确定分裂是否合理，然后将每一种分裂，每一次可能进行遍历，进而选择最佳分裂 参考]]></content>
+    <title>hexo_公式_图片</title>
+    <url>/2019/08/07/hexo-%E5%85%AC%E5%BC%8F-%E5%9B%BE%E7%89%87/</url>
+    <content><![CDATA[<p>向博客中添加图片和公式</p>
+<a id="more"></a>
+<h1 id="向博客中添加图片"><a href="#向博客中添加图片" class="headerlink" title="向博客中添加图片"></a>向博客中添加图片</h1><h2 id="更改站点配置文件"><a href="#更改站点配置文件" class="headerlink" title="更改站点配置文件"></a>更改站点配置文件</h2><p>将站点的_config.yml文件中的配置项post_asset_folder设为true</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">post_asset_folder: true</span><br></pre></td></tr></table></figure>
+<h2 id="存放照片"><a href="#存放照片" class="headerlink" title="存放照片"></a>存放照片</h2><p>执行命令$ hexo new post_name，在source/_posts中会生成文章post_name.md和同名文件夹post_name。将图片资源放在post_name中，文章就可以使用相对路径引用图片资源了。</p>
+<h2 id="在markdown-中插入照片"><a href="#在markdown-中插入照片" class="headerlink" title="在markdown 中插入照片"></a>在markdown 中插入照片</h2><p>图片在文章和首页中同时显示，可以使用标签插件语法。_posts/post_name/image.jpg这张照片可以用以下方式访问：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;% asset_img image_name.jpg (This is an image) %&#125;</span><br></pre></td></tr></table></figure></p>
+<p>其中： <strong>asset_img 是关键字 后面接空格然后加图片在同名文件夹中的名字，后面括号内的内容可省略，是图片在网页中显示的名字</strong></p>
+<h1 id="添加公式"><a href="#添加公式" class="headerlink" title="添加公式"></a>添加公式</h1><h2 id="更换-Hexo-的-markdown-渲染引擎，"><a href="#更换-Hexo-的-markdown-渲染引擎，" class="headerlink" title="更换 Hexo 的 markdown 渲染引擎，"></a>更换 Hexo 的 markdown 渲染引擎，</h2><p>hexo-renderer-kramed 引擎是在默认的渲染引擎 hexo-renderer-marked 的基础上修改了一些 bug ，两者比较接近，也比较轻量级<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ npm uninstall hexo-renderer-marked --save</span><br><span class="line">$ npm install hexo-renderer-kramed --save</span><br></pre></td></tr></table></figure></p>
+<h2 id="更改站点配置文件-1"><a href="#更改站点配置文件-1" class="headerlink" title="更改站点配置文件"></a>更改站点配置文件</h2><p>然后，跟换引擎后行间公式可以正确渲染了，但是这样还没有完全解决问题，行内公式的渲染还是有问题，因为 hexo-renderer-kramed 引擎也有语义冲突的问题。接下来到博客根目录下，找到node_modules\kramed\lib\rules\inline.js，把第11行的 escape 变量的值做相应的修改：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> //escape: /^\\([\\`*&#123;&#125;\[\]()#$+\-.!_&gt;])/,</span><br><span class="line">escape: /^\\([`*\[\]()#$+\-.!_&gt;])/,</span><br></pre></td></tr></table></figure>
+<p>这一步是在原基础上取消了对\,{,}的转义(escape)。同时把第20行的em变量也要做相应的修改</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> //em: /^\b_((?:__|[\s\S])+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br><span class="line">em: /^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br></pre></td></tr></table></figure>
+<p>重新启动hexo（先clean再generate）</p>
+<h2 id="更改主题配置文件"><a href="#更改主题配置文件" class="headerlink" title="更改主题配置文件"></a>更改主题配置文件</h2><p>在 Next 主题中开启 MathJax 开关, 找到mathjax<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mathjax:</span><br><span class="line">  enable: true</span><br><span class="line">  per_page: true</span><br><span class="line">  engine: mathjax</span><br><span class="line">  cdn: //cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML</span><br></pre></td></tr></table></figure></p>
+<h2 id="在文章的头里-添加mathjax：-true"><a href="#在文章的头里-添加mathjax：-true" class="headerlink" title="在文章的头里 添加mathjax： true"></a>在文章的头里 添加mathjax： true</h2><p>在根目录下scaffolds/post.md 添加<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mathjax: true</span><br></pre></td></tr></table></figure></p>
+<p>之所以要在文章头里设置开关，是因为考虑只有在用到公式的页面才加载 Mathjax，这样不需要渲染数学公式的页面的访问速度就不会受到影响了。没有公式的文章用false 即可。<br><strong>之前生成的页面需要加载mathjax的需要手动添加上述文章头，确保开关为true</strong></p>
+]]></content>
+      <categories>
+        <category>blog</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>xgboost</title>
+    <url>/2019/09/03/xgboost/</url>
+    <content><![CDATA[<p>xgboost 节点值的选择与分裂</p>
+<a id="more"></a>
+<h1 id="xgboost-节点值的选择以及分裂方法的选择"><a href="#xgboost-节点值的选择以及分裂方法的选择" class="headerlink" title="xgboost 节点值的选择以及分裂方法的选择"></a>xgboost 节点值的选择以及分裂方法的选择</h1><p>在上篇文章里引用的图片上，没有对打分函数进行具体解释，本节具体说一下，今天面试问道为什么xgboost是二阶泰勒展开，我觉得是和这一部分有关。</p>
+<h2 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h2><p>xgboost 的损失函数</p>
+<h3 id="如何确定一个节点的值"><a href="#如何确定一个节点的值" class="headerlink" title="如何确定一个节点的值"></a>如何确定一个节点的值</h3><img src="/2019/09/03/xgboost/loss.png">
+<p>目标就是找到 f 使得上式达到最小，通过泰勒展开以后，得到下式。<br>其中需要注意一点 l作为loss 其自变量是$\hat y ^{(t-1)}$ 是泰勒展开中的$x_0$ 而f可以看作是增加量，即泰勒展开中的$\Delta x$ 所以得到下式，   $ y ^{(t-1)}$ 是常数<br><img src="/2019/09/03/xgboost/loss2.png"><br>省略与f 无关的项，得到下式：<br><img src="/2019/09/03/xgboost/loss3.png"></p>
+<p>又因为f 其实就是w ,所以整理得到按照节点划分的目标函数，最终这个二次函数直接求最值点，<strong>就是这个节点的w值。</strong></p>
+<h3 id="如何分裂节点"><a href="#如何分裂节点" class="headerlink" title="如何分裂节点"></a>如何分裂节点</h3><p>通过贪心算法，生成树时，计算左子树，右子树的误差和，和未分裂的进行比较，确定分裂是否合理，然后将每一种分裂，每一次可能进行遍历，进而选择最佳分裂</p>
+<p><a href="https://www.jianshu.com/p/8c62fb63fc1b" target="_blank" rel="noopener">参考</a></p>
+]]></content>
       <categories>
         <category>true</category>
       </categories>
   </entry>
   <entry>
-    <title><![CDATA[反向传导]]></title>
-    <url>%2F2019%2F08%2F19%2F%E5%8F%8D%E5%90%91%E4%BC%A0%E5%AF%BC%2F</url>
-    <content type="text"><![CDATA[RNN 与 反向传播 反向传播的思想梯度下降对于一个固定的函数，在其他变量不变的情况下，观测点沿着函数任一个自变量的负梯度方向移动就会使得观测点的函数值下降，同理同时沿着每个自变量的负梯度构成的负梯度方向移动，函数值就会很快的下降。 对于机器学习，一般的决策函数可以表示为$\hat y = f(x,\theta )$ 其中x是已知输入，y是输出，$\theta$ 是参数，但是在给定训练集和label时，其实自变量就是这个参数，我们的目标是找到一个合适的参数，让模型成为到我们想要的样子，所以我们把‘想要的样子’定义为与真实label 的差距，也就是目标函数，$L(y_i,\hat y_i)$ ,我们用它来衡量，模型与我们期望的差距，差距越小越好。所以目标函数可以看作是L为因变量，$\theta$ 是自变量，我们的终极目标是求L 的最小值时的 $\theta$ 的值。在预测是参数是固定的，此时自变量又变回了x.所以参数的跟新与L的数值结果没有关系，只与它的导数以及当前参数值有关。 反向传播其实传播只是一种通俗，形象的描述，其本质是链式法则，计算目标L对每个参数的导数，然后更新参数。 RNN 举例介绍反向传播 z^t = U* X^t+ W* h^{t-1 } + bh^t = \delta(z^t)o^t = V * h^t + c\hat {y^t} = \sigma(o^t)L =\sum_t L_t= \sum_t loss(y_t, \hat y_t )(由于参数W等是公用的，通过L的表达式可以得到每更新一次参数，就是把$L_t$ 的所有分量的梯度加起来)反向对于参数（目前的自变量）W,V,U,b,c,，分别计算梯度，从举例L最近的分别求导，首先L 对$\hat y_i$ 求导，然后对c求导，按照一般的链式求导法则，很容易计算得到 \sum_t \frac{dL}{dy_t} * \frac {dy_t}{do^t} * \frac {do^t}{dc}当L是交叉熵，$\sigma$ 是softmax的时候,结果为：$\sum_t (\hat y_t- y_t)$同理容易求得对V的导数。 比较难求的是W,U,b 这里以W为例，进行求解。显然W的因变量是$h_t$ ,而$h_t$ 的因变量，有两个，一个是下一层的$L_{t+1}$ (因为影响了下一层的输入$h_{t+1}$) 另一个是这一层的$L_t$ 的. 所以L对于$h_t$的求导会有两个部分（$h_t$对参数W，U，b 求导很简单，直接求导）首先计算L对$h_t$的导数：对于最后一层,T时刻，后续没有$h_{T+1}$所以： \frac{dL_T}{dy_T} * \frac{dy_T}{do^T} * \frac{do^T}{dh_T} = (\hat y_T- y_T)* V当t小于T时，令f(t)=\frac{dL}{dh_t} f(t) = \frac{dL_t}{dy_t} * \frac{dy_t}{do^t} * \frac{do^t}{dh_t} +\frac{dL_{t+1}}{dy_{t+1}} * \frac{dy_{t+1}}{do^{t+1}} * \frac{do^{t+1}}{dh_{t+1}}* \frac{dh^{t+1}}{dh_t}f(t) = (\hat y_t- y_t)* V+f(t+1)* \delta'(h^{t+1})* W显然、$\frac{dh^t}{dW} =h_{t-1}$所以对于，每个L分量$L_t$ 对W求导为： f(t)* \frac{dh^t}{z^t}* \frac{z^t}{dW}=f(t)* \frac{dh^t}{z^t}* W所以 \frac{dL}{dW} = \sum_t f(t)* \frac{dh^t}{z^t}* WW_{new} =W_{old} - \frac{dL}{dW_{old}}同理容易求得其他参数。所以可以看出是每一个序列，更新一次RNN的参数。]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-  </entry>
-  <entry>
-    <title><![CDATA[GBDT与XGboost]]></title>
-    <url>%2F2019%2F08%2F17%2Fboosting%2F</url>
-    <content type="text"><![CDATA[对这两个算法进行简单的记录 GBDT思路： 使用多个cart树，对数据进行拟合，每个树都用来拟合上一步的负梯度（后面解释），最后将每一个cart树的结果累加（加权），得到预测结果。 需要理解的几个问题： 为什么拟合负梯度，和拟合误差一样吗？（回归问题） 如何拟合负梯度 如何确定每个叶子节点的值 加权求和是什么意思 正则化的问题 拟合负梯度（解决前两个问题）首先对于一个函数来说，沿着负梯度方向会让函数值降低，对于一般问题，损失函数L是关于参数$\theta$ 的函数，一般做法是对参数求导，然后更新参数，得到更好的决策函数，进而降低误差。对于GBDT来说我们提升的不是参数$\theta$ 而是决策函数本身（换句话说参数就是树本身），具体来说。针对损失函数的：一般方法的损失更新： L(y_i, f(x_i,\theta^{[i]})=L(y_i, f(x_i,\theta^{[i-1]} - \left. \frac{dL}{d\theta} \right| _{\theta={\theta^{[i-1]}}})对于GBDT的损失更新： L(y_i, f_t(x_i)=L(y_i, f_{t-1}(x_i) - \left. \frac{dL}{df} \right|_{f={f_{t-1}}})所以构建GBDT树的过程：初始：假定初始的$f_0$ 是把所有的输入都预测为0，那么通过损失函数对f的导数的解析式可以得到负梯度的方程$- \left. \frac{dL}{df} \right|_{f={f_0}}$ ,_ 输入$f_{0}$ 就是初始cart树预测的结果（也就是0）,构建第二棵树： 在上一步的基础上计算得到了负梯度，将负梯度作为新的label ,按照cart 树的构造方法，得到第二棵树，并为每个叶子节点确定输出的值（后面介绍）。然后更新下一个负梯度$- \left. \frac{dL}{df} \right|_{f={f_1}}$ ,_ 其中$f_1$ 是这第二棵树的预测结果。用新的到的负梯度作为新的label ,如此迭代下去……通过导数的计算已经包含了L的信息 也就是原始label 的信息。在来说一下误差和负梯度的问题（这里的误差是只真实y与预测的$\hat y$ 的差的绝对值 ），当L损失函数为均方误差时，L对f 的导数就是这个误差，所以用mse 作为损失函数的时候，每次更新的负梯度就是求这棵树对$x_i$ 的预测与这棵树的输入 label 的差的绝对值。 针对分类问题也是一样的，二分类问题可以看作是对于每一个类别概率的回归，每个叶子节点的值代表一个连续值，通过类似sigmoid转化成概率，此时对于目标函数一般使用对数似然损失函数$y\epsilon \{-1,1\}$ L(y,f(x))=log(1+exp(-yf(x))) 多分类 同理 类似softmax 用一阶段泰勒展开式，更新参数或者方程，就是沿着负梯度更新，二阶泰勒展开呢 就是用负梯度除以二阶导数的方向更新，GBDT只用了一阶，Xgboost用的二阶 如何确定每个叶子节点的值 找到一个值c，当这个叶子节点中的所有样本都被预测为c时，对于该叶子节点中的每个样本x，计算其误差，使得误差的累加和最小，那么c为这个叶子节点的值。 如何正则（权重）加入正则项：对于个树，给一个权重v（0到1之间）, 预测结果要乘以v ，才是该树的最终预测结果。 抽样，确定超参数（树的深度等参数） cart树的剪枝等 GBDT与随机森林 组成随机森林的树可以是分类树，也可以是回归树；而GBDT只能由回归树组成。 组成随机森林的树可以并行生成；而GBDT只能是串行生成。 对于最终的输出结果而言，随机森林采用多数投票等；而GBDT则是将所有结果累加起来，或者加权累加起来。 随机森林对异常值不敏感；GBDT对异常值非常敏感。原因是当前的错误会延续给下一棵树。 随机森林对训练集一视同仁；GBDT是基于权值的弱分类器的集成。 随机森林是通过减少模型方差提高性能；GBDT是通过减少模型偏差提高性能。 RF不需要进行数据预处理，即特征归一化。而GBDT则需要进行特征归一化。 为什么RF的树深度比GBDT深很多对于Bagging算法来说，由于我们会并行地训练很多不同的分类器的目的就是降低这个方差(variance) ,因为采用了相互独立的基分类器多了以后，h的值自然就会靠近.所以对于每个基分类器来说，目标就是如何降低这个偏差（bias),所以我们会采用深度很深甚至不剪枝的决策树。 对于Boosting来说，每一步我们都会在上一轮的基础上更加拟合原数据，所以可以保证偏差（bias）,所以对于每个基分类器来说，问题就在于如何选择variance更小的分类器，即更简单的分类器，所以我们选择了深度很浅的决策树 xgboost思路与GBDT类似，可以说是在基础上更新的新方法，加入了正则，二阶泰勒展开信息等，具体差别后面总结。 目标函数与正则项loss 函数由二阶泰勒展开近似代替，通过求目标函数（二次函数）的极值点的到$L $ 的最小值，以此作为打分函数的依据（分裂节点的依据）。 在GBDT原有的loss 的基础上，增加了正则项： 算法流程与GBDT一样，不同点是算法的目标函数，以及分裂每个节点的方法。和传统的boosting tree模型一样，xgboost的提升模型也是采用的残差（或梯度负方向），不同的是分裂结点选取的时候不一定是最小平方损失。 对于稀疏值，缺失值通过分别计算假设其属于$G_L$ 或者属于$G_R$ 选择最合适的。 GBDT 与 xgboostxgboost 支持自定义目标函数 只要二阶可导就行。 怎么防过拟合目标函数中的正则项，行抽样，列抽样，shrinkage（在一个树结束的结果上乘以一个0-1之间的数） xgboost与深度学习对比同的机器学习模型适用于不同类型的任务。深度神经网络通过对时空位置建模，能够很好地捕获图像、语音、文本等高维数据。而基于树模型的XGBoost则能很好地处理表格数据，同时还拥有一些深度神经网络所没有的特性（如：模型的可解释性、输入数据的不变性、更易于调参等）。]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-  </entry>
-  <entry>
-    <title><![CDATA[hexo_公式_图片]]></title>
-    <url>%2F2019%2F08%2F07%2Fhexo-%E5%85%AC%E5%BC%8F-%E5%9B%BE%E7%89%87%2F</url>
-    <content type="text"><![CDATA[向博客中添加图片和公式 向博客中添加图片更改站点配置文件将站点的_config.yml文件中的配置项post_asset_folder设为true 1post_asset_folder: true 存放照片执行命令$ hexo new post_name，在source/_posts中会生成文章post_name.md和同名文件夹post_name。将图片资源放在post_name中，文章就可以使用相对路径引用图片资源了。 在markdown 中插入照片图片在文章和首页中同时显示，可以使用标签插件语法。_posts/post_name/image.jpg这张照片可以用以下方式访问：1&#123;% asset_img image_name.jpg (This is an image) %&#125; 其中： asset_img 是关键字 后面接空格然后加图片在同名文件夹中的名字，后面括号内的内容可省略，是图片在网页中显示的名字 添加公式更换 Hexo 的 markdown 渲染引擎，hexo-renderer-kramed 引擎是在默认的渲染引擎 hexo-renderer-marked 的基础上修改了一些 bug ，两者比较接近，也比较轻量级12$ npm uninstall hexo-renderer-marked --save$ npm install hexo-renderer-kramed --save 更改站点配置文件然后，跟换引擎后行间公式可以正确渲染了，但是这样还没有完全解决问题，行内公式的渲染还是有问题，因为 hexo-renderer-kramed 引擎也有语义冲突的问题。接下来到博客根目录下，找到node_modules\kramed\lib\rules\inline.js，把第11行的 escape 变量的值做相应的修改： 12 //escape: /^\\([\\`*&#123;&#125;\[\]()#$+\-.!_&gt;])/,escape: /^\\([`*\[\]()#$+\-.!_&gt;])/, 这一步是在原基础上取消了对\,{,}的转义(escape)。同时把第20行的em变量也要做相应的修改 12 //em: /^\b_((?:__|[\s\S])+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,em: /^\*((?:\*\*|[\s\S])+?)\*(?!\*)/, 重新启动hexo（先clean再generate） 更改主题配置文件在 Next 主题中开启 MathJax 开关, 找到mathjax12345mathjax: enable: true per_page: true engine: mathjax cdn: //cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML 在文章的头里 添加mathjax： true在根目录下scaffolds/post.md 添加1mathjax: true 之所以要在文章头里设置开关，是因为考虑只有在用到公式的页面才加载 Mathjax，这样不需要渲染数学公式的页面的访问速度就不会受到影响了。没有公式的文章用false 即可。之前生成的页面需要加载mathjax的需要手动添加上述文章头，确保开关为true]]></content>
-      <categories>
-        <category>blog</category>
-      </categories>
-  </entry>
-  <entry>
-    <title><![CDATA[初步学习EM算法]]></title>
-    <url>%2F2019%2F08%2F07%2F%E5%88%9D%E6%AD%A5%E5%AD%A6%E4%B9%A0EM%E7%AE%97%E6%B3%95%2F</url>
-    <content type="text"><![CDATA[EM 算法的部分知识点总结 问题介绍一般的问题：如果概率模型的变量都是观测变量，则给定数据之后，可以直接用极大似然估计法或者贝叶斯估计法来估计模型参数。EM算法解决的问题：存在一个中间过程，观测值是由两步随机过程得到的. 已知三枚硬币 A，B，C ，这些硬币正面出现的概率分别为 。进行如下试验：先投掷硬币 A，若是正面则选硬币 B；若是反面则选硬币 C 。然后投掷被选出来的硬币，投掷的结果如果是正面则记作 1；投掷的结果如果是反面则记作0 。独立重复地 次试验，观测结果为： 1,1,0,1,0,…0,1 。现在只能观测到投掷硬币的结果，无法观测投掷硬币的过程，求估计三硬币正面出现的概率。 其中第一次就是一个隐藏过程。 模型建立 已知最终的观测序列为 假设隐藏层为已知两个过程的模型$P_1,P_2$，但是不知道具体参数,参数集合为$\theta$。 通过极大似然估计的一般过程，目标函数为求公式的最大值： 其中Y 是与Z 有关系的变量，所以公式展开是： 其中$\theta$ 是两个过程中的所有参数。 与一般问题不同的是含有隐藏过程Z ，而它是未观测数据。 模型求解原理目标： 让$L(\theta)$ 迭代的越来越大,直到收敛过程： 带入过程Z 得到新的目标因为log是凸函数，通过jessen不等式得到目标函数的下界：化简得到：最终$L(\theta)$ 的下界为：原问题转化为求上式的最大值时的$\theta$ 值。即：化简（删除了常数项）为：最终原问题转化为上述问题，其中$\theta$ 是下一次迭代的目标值（未知量），其他均为已知量。 算法第一步E步： 求出上一步的最后的式子的解析式，也就是带入 ,得到关于 $\theta$ 的解析式第二步M步骤： 求出最大的$\theta$ ，更新$\theta^{[i]}$收敛条件是：两次迭代之间差距很小。 求解方法分别对每个参数求偏导，令导数为零，进而求得下一轮的初始值。应用为求解高斯混合模型]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-  </entry>
-  <entry>
-    <title><![CDATA[动态规划]]></title>
-    <url>%2F2019%2F08%2F06%2F%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%2F</url>
-    <content type="text"><![CDATA[应用动态规划解决队列问题 问题描述 计算最少出列多少位同学，使得剩下的同学排成合唱队形说明：N位同学站成一排，音乐老师要请其中的(N-K)位同学出列，使得剩下的K位同学排成合唱队形。合唱队形是指这样的一种队形：设K位同学从左到右依次编号为1，2…，K，他们的身高分别为T1，T2，…，TK， 则他们的身高满足存在i（1&lt;=i&lt;=K）使得T1]]></content>
+    <title>动态规划</title>
+    <url>/2019/08/06/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</url>
+    <content><![CDATA[<p>应用动态规划解决队列问题<br><a id="more"></a></p>
+<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><blockquote>
+<p>计算最少出列多少位同学，使得剩下的同学排成合唱队形说明：N位同学站成一排，音乐老师要请其中的(N-K)位同学出列，使得剩下的K位同学排成合唱队形。<br>合唱队形是指这样的一种队形：设K位同学从左到右依次编号为1，2…，K，他们的身高分别为T1，T2，…，TK，   则他们的身高满足存在i（1&lt;=i&lt;=K）使得T1<t2<......<ti-1<ti>Ti+1&gt;……&gt;TK。<br>你的任务是，已知所有N位同学的身高，计算最少需要几位同学出列，可以使得剩下的同学排成合唱队形。</t2<......<ti-1<ti></p>
+</blockquote>
+<p>示例1</p>
+<blockquote>
+<p>8<br>186 186 150 200 160 130 197 200</p>
+</blockquote>
+<p>输出</p>
+<blockquote>
+<p>4</p>
+</blockquote>
+<h3 id="求解思路"><a href="#求解思路" class="headerlink" title="求解思路"></a>求解思路</h3><ol>
+<li>通过动态规划求解每个字符结尾的最大递增子字符串的长度，</li>
+<li>再反转数组，</li>
+<li>按照 1.步骤再进行一次</li>
+<li>两次叠加最大值减一即为最后队列的长度<br>代码：<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; dp(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;input,<span class="keyword">int</span> n)&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; list_(n,<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j=i<span class="number">-1</span>;j&gt;=<span class="number">0</span>;j--)&#123;</span><br><span class="line">                <span class="keyword">if</span>(input[i]&gt;input[j])</span><br><span class="line">                    list_[i]=max(list_[i],list_[j]+<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">return</span> list_;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n;</span><br><span class="line">    <span class="keyword">while</span>(<span class="built_in">cin</span>&gt;&gt;n)&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; input(n);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">            <span class="built_in">cin</span>&gt;&gt;input[i];</span><br><span class="line">        &#125;</span><br><span class="line">     <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; front = dp(input,n);</span><br><span class="line">     reverse(input.begin(),input.end());</span><br><span class="line">     <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; back = dp(input, n);</span><br><span class="line">     <span class="keyword">int</span> max_ = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">            <span class="keyword">int</span> temp =front[i]+back[n-i<span class="number">-1</span>];</span><br><span class="line">             <span class="keyword">if</span>(temp&gt;max_) max_=temp;</span><br><span class="line">     &#125;    </span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;(n-(max_<span class="number">-1</span>))&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">     &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+]]></content>
       <categories>
         <category>数据结构与算法</category>
       </categories>
   </entry>
   <entry>
-    <title><![CDATA[build_blog]]></title>
-    <url>%2F2019%2F08%2F05%2Fbuild-blog%2F</url>
-    <content type="text"><![CDATA[基于hexo github 搭建主题为nextT的博客 github 搭建blog创建github 库创建于用户名相同的github库 命名为user_name.github.io 安装Node.js方法百度 安装Hexo更换nmp 为淘宝源123$ npm config set registry https://registry.npm.taobao.org/$ npm config get registry 安装 hexo1npm install hexo -g 创建hexo文件夹定位到自己创建的blog 文件夹1/blog $ hexo init 安装一些组件1$ nmp install 将Hexo 与github连接设置好git, 可百度方法将blog 文件夹下面的站点配置文件_config.yml 进行修改1234eploy: type: git repository: git@github.com:user_name/user_name.github.io.git branch: master 拷贝主题NexT通过git clone 命令进行， 主题会被放在theme 文件夹下12$ cd your-hexo-site$ git clone https://github.com/iissnan/hexo-theme-next themes/next 启动主题与所有 Hexo 主题启用的模式一样。 当 克隆/下载 完成后，打开 站点配置文件， 找到 theme 字段，并将其值更改为 next 1theme: next 配置主题见链接 NexT 其他文件内容与文件目录介绍hexo 目录中_config.yml 为站点配置文件，source/_post/ 文件夹是存放.md静态文件的目录，其中的.md文件的开头如下其中第三行左边的是类别的关键字（类别的应为就是categoties），右边是具体的类别,不同文件中冒号，左边的是固定的，右边根据需要写所属类别。改模板在\blog\scaffolds\post.md中123title: build_blogdate: 2019-08-05 21:43:01categories: &quot;blog&quot; hexo 常用命令hexo 的所有操作都在git bash 上进行 并且定位在/blog 目录下1234hexo g //生成静态网页并存储在public文件夹下hexo clean // 删除上述文件夹下的文件hexo s -p 5000 //指定本地端口5000 本地查看网页hexo d 上传网页 将public/2019...文件夹下的静态网页上传github]]></content>
+    <title>初步学习EM算法</title>
+    <url>/2019/08/07/%E5%88%9D%E6%AD%A5%E5%AD%A6%E4%B9%A0EM%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<p>EM 算法的部分知识点总结<br><a id="more"></a></p>
+<h1 id="问题介绍"><a href="#问题介绍" class="headerlink" title="问题介绍"></a>问题介绍</h1><p>一般的问题：<br>如果概率模型的变量都是观测变量，则给定数据之后，可以直接用极大似然估计法或者贝叶斯估计法来估计模型参数。<br>EM算法解决的问题：<br>存在一个中间过程，观测值是由两步随机过程得到的.</p>
+<blockquote>
+<p>已知三枚硬币 A，B，C ，这些硬币正面出现的概率分别为 。进行如下试验：先投掷硬币 A，若是正面则选硬币 B；若是反面则选硬币 C 。然后投掷被选出来的硬币，投掷的结果如果是正面则记作 1；投掷的结果如果是反面则记作0 。独立重复地  次试验，观测结果为： 1,1,0,1,0,…0,1 。现在只能观测到投掷硬币的结果，无法观测投掷硬币的过程，求估计三硬币正面出现的概率。</p>
+</blockquote>
+<p>其中第一次就是一个隐藏过程。</p>
+<h1 id="模型建立"><a href="#模型建立" class="headerlink" title="模型建立"></a>模型建立</h1><blockquote>
+<p>已知最终的观测序列为<img src="/2019/08/07/初步学习EM算法/1.png"> 假设隐藏层为<img src="/2019/08/07/初步学习EM算法/2.png"><br>已知两个过程的模型$P_1,P_2$，但是不知道具体参数,参数集合为$\theta$。</p>
+</blockquote>
+<p>通过极大似然估计的一般过程，目标函数为求公式的最大值：</p>
+<blockquote>
+   <img src="/2019/08/07/初步学习EM算法/3.png">
+</blockquote>
+<p>其中<em>Y</em> 是与<em>Z</em> 有关系的变量，所以公式展开是：</p>
+<blockquote>
+<img src="/2019/08/07/初步学习EM算法/4.png">
+</blockquote>
+<p>其中$\theta$ 是两个过程中的所有参数。 与一般问题不同的是含有隐藏过程<em>Z</em> ，而它是未观测数据。</p>
+<h1 id="模型求解"><a href="#模型求解" class="headerlink" title="模型求解"></a>模型求解</h1><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>目标： 让$L(\theta)$ 迭代的越来越大,直到收敛<br>过程：</p>
+<blockquote>
+<img src="/2019/08/07/初步学习EM算法/5.png">
+<p>带入过程Z 得到新的目标<br><img src="/2019/08/07/初步学习EM算法/6.png"><br>因为log是凸函数，通过jessen不等式得到目标函数的下界：<br><img src="/2019/08/07/初步学习EM算法/7.png"><br>化简得到：<br><img src="/2019/08/07/初步学习EM算法/8.png"><br>最终$L(\theta)$ 的下界为：<br><img src="/2019/08/07/初步学习EM算法/9.png"><br>原问题转化为求上式的最大值时的$\theta$ 值。即：<br><img src="/2019/08/07/初步学习EM算法/10.png"><br>化简（删除了常数项）为：<br><img src="/2019/08/07/初步学习EM算法/11.png"><br>最终原问题转化为上述问题，其中$\theta$ 是下一次迭代的目标值（未知量），其他均为已知量。</p>
+</blockquote>
+<h2 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h2><p>第一步E步： 求出上一步的最后的式子的解析式，也就是带入 ,得到关于 $\theta$ 的解析式<br>第二步M步骤： 求出最大的$\theta$ ，更新$\theta^{[i]}$<br>收敛条件是：两次迭代之间差距很小。</p>
+<h2 id="求解方法"><a href="#求解方法" class="headerlink" title="求解方法"></a>求解方法</h2><p>分别对每个参数求偏导，令导数为零，进而求得下一轮的初始值。<br>应用为<strong>求解高斯混合模型</strong></p>
+]]></content>
       <categories>
-        <category>blog</category>
+        <category>机器学习</category>
       </categories>
   </entry>
   <entry>
-    <title><![CDATA[C++容器]]></title>
-    <url>%2F2019%2F08%2F05%2FC-%E5%AE%B9%E5%99%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B0%8F%E9%97%AE%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[关于初学C++容器的的一些方法的简单记录 容器的初始化与索引数据类型：vector初始化1234vector&lt;int&gt; my_vec&#123;1,2,3&#125;;vector&lt;int&gt; my_vec(10,5);// 初始化10个5vector&lt;int&gt; my_vec(10); // 初始化10个位置vector&lt;int&gt;my_sec&#123;my_vec.begin()+2,my_vec.end()-1&#125;; //通过my_vec进行初始化[2:-1) map初始化 12map&lt;string, int&gt; my_map&#123;&#123; , &#125; , &#123; , &#125;&#125;; //map 存储pair 类型作为元素// map 与python类似 my_map【】 索引可添加元素 数据类型 对于容器的索引，例如vec[index]. index 是unsign类型，类型名字是size_t，当与int类型进行比较，以及运算是容易出错。 12345 vector&lt;int&gt; ans(10,5);vector&lt;int&gt; my_v&#123;ans.begin()+2,ans.end()-5&#125;;//会报错no matching function for call to 'min' auto anss = min(5,ans.size()); ans.size()不是int类型 转化为int 才能比较。auto anss = min(5,ans.size()); 容器的增删改查加排序添加元素 添加数据可以通过容器自带的类似于push_back(), insert()方法；或者inserter() 这样的泛型函数； 1234vector&lt;int&gt; vec&#123;1,2,3,4&#125;;auto it = vec.insert(vec.begin()+1, 10); // 返回的it 是插入位置(10 所在的位置)的迭代器， 在第一个参数（迭代器）前面插入后面参数的内容it = vec.insert(vec.end(), 3, 4); //插入通过构造函数调用后两个参数的返回值（3个4）插入到vec 末尾it = vec.insert(vec.end(),vec2.begin(), vec2.end()); // 将vec2插入到vec1里, 类似python 里面的extend 删除元素123vector&lt;int&gt;::iterator it_1;auto it = vec.erase(it_1); //删除迭代器所指的元素，返回删除元素位置后一位的迭代器。 修改可以通过迭代器的解引用*it 进行索引和修改 也可以是下标索引，map索引的时候可能会添加心的pair 查找123456789101112131415// 对于string vec 调用自己的find 方法auto it = vec.find(target_val, start_index, end_index); // 从索引范围内查找第一个元素 返回元素所在index 若不在则返回比长度大得多的整数// find_first_of , find_last_of声明如下size_t find_last_of (const string&amp; str, size_t pos = npos) const noexcept;size_t find_last_of (const char* s, size_t pos = npos) const;size_t find_last_of (const char* s, size_t pos, size_t n) const;size_t find_last_of (char c, size_t pos = npos) const noexcept;// 对于vector 没有find 方法 需要调用 泛型函数 findauto it = find(vec.begin(), vec.end(), target_val); // 输入输出均为迭代器；与string index不同// 对于map 查找可以用find 返回值是key 也可以用count 返回true false; 容器最大值最小值的索引通过返回最大或者最小值的迭代器，然后与begin()迭代器做差得到123vector&lt;int&gt; v(10);auto it = max_element(v.begin(),v.end());int index = it-v.begin(); 排序泛型函数sort(it.begin(), it.end(),my_sort);123456sort(numbers.begin(),numbers.end(),my_sort);static bool my_sort(int A, intB)&#123;return A&lt;B;//A靠前&#125;my_sort函数为成员函数时（成员函数默认第一个参数是*this） 需要加static 作为一般函数（没有this参数）是不需要 容器的泛型函数反转1234vector&lt;int&gt; arrayRever&#123;1,2,3,4&#125;;reverse(arrayRever.begin(),arrayRever.end()); //没有返回值 就地反转vector&lt;int&gt; vec (arrayRever.rbegin(), arrayRever.rend()); // 初始化反转]]></content>
+    <title>反向传导</title>
+    <url>/2019/08/19/%E5%8F%8D%E5%90%91%E4%BC%A0%E5%AF%BC/</url>
+    <content><![CDATA[<p>RNN 与 反向传播<br><a id="more"></a></p>
+<h1 id="反向传播的思想"><a href="#反向传播的思想" class="headerlink" title="反向传播的思想"></a>反向传播的思想</h1><h2 id="梯度下降"><a href="#梯度下降" class="headerlink" title="梯度下降"></a>梯度下降</h2><p>对于一个固定的函数，在其他变量不变的情况下，观测点沿着函数任一个自变量的负梯度方向移动就会使得观测点的函数值下降，同理同时沿着每个自变量的负梯度构成的负梯度方向移动，函数值就会很快的下降。</p>
+<p>对于机器学习，一般的决策函数可以表示为$\hat y = f(x,\theta )$  其中x是已知输入，y是输出，$\theta$ 是参数，但是在给定训练集和label时，其实自变量就是这个参数，我们的目标是找到一个合适的参数，让模型成为到我们想要的样子，所以我们把‘想要的样子’定义为与真实label 的差距，也就是目标函数，$L(y_i,\hat y_i)$ ,我们用它来衡量，模型与我们期望的差距，差距越小越好。所以目标函数可以看作是L为因变量，$\theta$ 是自变量，我们的终极目标是求L 的最小值时的 $\theta$ 的值。在预测是参数是固定的，此时自变量又变回了x.<br>所以参数的跟新与L的数值结果没有关系，只与它的导数以及当前参数值有关。</p>
+<h2 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h2><p>其实传播只是一种通俗，形象的描述，其本质是链式法则，计算目标L对每个参数的导数，然后更新参数。</p>
+<h2 id="RNN-举例介绍反向传播"><a href="#RNN-举例介绍反向传播" class="headerlink" title="RNN 举例介绍反向传播"></a>RNN 举例介绍反向传播</h2><img src="/2019/08/19/反向传导/rnnliucheng.png">
+<script type="math/tex; mode=display">z^t = U* X^t+ W* h^{t-1 } + b</script><script type="math/tex; mode=display">h^t = \delta(z^t)</script><script type="math/tex; mode=display">o^t = V * h^t + c</script><script type="math/tex; mode=display">\hat {y^t} = \sigma(o^t)</script><script type="math/tex; mode=display">L =\sum_t L_t= \sum_t loss(y_t, \hat y_t )</script><p>(由于参数W等是公用的，通过L的表达式可以得到每更新一次参数，就是把$L_t$ 的所有分量的梯度加起来)<br>反向对于参数（目前的自变量）W,V,U,b,c,，分别计算梯度，<br>从举例L最近的分别求导，<br>首先L 对$\hat y_i$ 求导，然后对c求导，按照一般的链式求导法则，很容易计算得到</p>
+<script type="math/tex; mode=display">\sum_t \frac{dL}{dy_t} *   \frac {dy_t}{do^t} *  \frac {do^t}{dc}</script><p>当L是交叉熵，$\sigma$ 是softmax的时候,结果为：$\sum_t (\hat y_t-  y_t)$<br>同理容易求得对V的导数。</p>
+<p>比较难求的是W,U,b 这里以W为例，进行求解。<br>显然W的因变量是$h_t$ ,而$h_t$ 的因变量，有两个，一个是下一层的$L_{t+1}$ (因为影响了下一层的输入$h_{t+1}$) 另一个是这一层的$L_t$ 的. <strong>所以L对于$h_t$的求导会有两个部分（$h_t$对参数W，U，b 求导很简单，直接求导）</strong><br>首先计算L对$h_t$的导数：<br>对于最后一层,T时刻，后续没有$h_{T+1}$所以：</p>
+<script type="math/tex; mode=display">\frac{dL_T}{dy_T} *   \frac{dy_T}{do^T} * \frac{do^T}{dh_T} =  (\hat y_T-  y_T)* V</script><p>当t小于T时，令<script type="math/tex">f(t)=\frac{dL}{dh_t}</script></p>
+<script type="math/tex; mode=display">f(t) = \frac{dL_t}{dy_t} *   \frac{dy_t}{do^t} * \frac{do^t}{dh_t} +\frac{dL_{t+1}}{dy_{t+1}} *   \frac{dy_{t+1}}{do^{t+1}} * \frac{do^{t+1}}{dh_{t+1}}* \frac{dh^{t+1}}{dh_t}</script><script type="math/tex; mode=display">f(t) =  (\hat y_t-  y_t)* V+f(t+1)* \delta'(h^{t+1})* W</script><p>显然、$\frac{dh^t}{dW} =h_{t-1}$<br>所以对于，每个L分量$L_t$ 对W求导为：</p>
+<script type="math/tex; mode=display">f(t)* \frac{dh^t}{z^t}*  \frac{z^t}{dW}=f(t)* \frac{dh^t}{z^t}* W</script><p>所以</p>
+<script type="math/tex; mode=display">\frac{dL}{dW} = \sum_t f(t)* \frac{dh^t}{z^t}* W</script><script type="math/tex; mode=display">W_{new} =W_{old} -  \frac{dL}{dW_{old}}</script><p>同理容易求得其他参数。<br>所以可以看出是每一个序列，更新一次RNN的参数。</p>
+]]></content>
       <categories>
-        <category>C++</category>
-      </categories>
-  </entry>
-  <entry>
-    <title><![CDATA[C—的小问题]]></title>
-    <url>%2F2019%2F08%2F05%2FC-%E9%81%87%E8%A7%81%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[介绍了 string 与char int char* 的转化，for 枚举类型，和INT_MAX 类型转换string转const char*12string s ="abc";const char* c_s = s.c_str(); 123string str=“world”;const char *p = str.c_str(); // 要加const或者等号右边用char* const char *p = str.data(); // data():与c_str()类似，但是返回的数组不以空字符终止 const char*转string12const char* c_s ="abc";string s(c_s); string转char*12345string s ="abc";char* c;const int len = s.length();c =new char[len+1];strcpy(c,s.c_str()); char*转string123const char* cpc ="abc";char* pc =new char[100];//足够长strcpy(pc,cpc); 数字转stringauto it = to_string(input) it可以是浮点数，input是char类型是 会得到对应的asicc码； char 转string只能通过初始化string 得到单个字母的string类型1234string str(1,'a')string str; str.push_back('a');stringstream ss;ss&lt;&lt;'a';string str2 = ss.str(); for 枚举用法123456789101112vector &lt;int&gt; vec(10.0);string str="abcdefg";map&lt;string, int&gt; my_map=&#123;&#123;"a", 2&#125;,&#123;"b", 3&#125;&#125;;for(auto &amp;it : vec)&#123;cout&lt;&lt;it&lt;&lt;endl; // 返回的是引用 可以用来修改容器内内容&#125;for(auto it : str)&#123;cout&lt;&lt;it&lt;&lt;endl; // 返回的是char&#125;for(auto it : my_map)&#123;cout&lt;&lt;it.first&lt;&lt;it.second&lt;&lt;endl;//返回的是pair变量&#125; int类型的最大最小值12INT_MAX (INT32_MAX)INT_MIN (INT32_MIN)]]></content>
-      <categories>
-        <category>C++</category>
+        <category>机器学习</category>
       </categories>
   </entry>
 </search>
