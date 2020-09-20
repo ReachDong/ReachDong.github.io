@@ -30,6 +30,51 @@
       </categories>
   </entry>
   <entry>
+    <title>GBDT与XGboost</title>
+    <url>/2019/08/17/boosting/</url>
+    <content><![CDATA[<p>对这两个算法进行简单的记录<br><a id="more"></a></p>
+<h1 id="GBDT"><a href="#GBDT" class="headerlink" title="GBDT"></a>GBDT</h1><p>思路： 使用多个cart树，对数据进行拟合，每个树都用来拟合上一步的负梯度（后面解释），最后将每一个cart树的结果累加（加权），得到预测结果。<br> 需要理解的几个问题：</p>
+<ul>
+<li>为什么拟合负梯度，和拟合误差一样吗？（回归问题）</li>
+<li>如何拟合负梯度</li>
+<li>如何确定每个叶子节点的值</li>
+<li>加权求和是什么意思</li>
+<li>正则化的问题</li>
+</ul>
+<h2 id="拟合负梯度（解决前两个问题）"><a href="#拟合负梯度（解决前两个问题）" class="headerlink" title="拟合负梯度（解决前两个问题）"></a>拟合负梯度（解决前两个问题）</h2><p>首先对于一个函数来说，沿着负梯度方向会让函数值降低，对于一般问题，损失函数L是关于参数$\theta$ 的函数，一般做法是对参数求导，然后更新参数，得到更好的决策函数，进而降低误差。对于GBDT来说我们提升的不是参数$\theta$ 而是决策函数本身（换句话说参数就是树本身），具体来说。针对损失函数的：<br>一般方法的损失更新：</p>
+<script type="math/tex; mode=display">L(y_i, f(x_i,\theta^{[i]})=L(y_i, f(x_i,\theta^{[i-1]} - \left. \frac{dL}{d\theta} \right| _{\theta={\theta^{[i-1]}}})</script><p>对于GBDT的损失更新：</p>
+<script type="math/tex; mode=display">L(y_i, f_t(x_i)=L(y_i, f_{t-1}(x_i) - \left. \frac{dL}{df} \right|_{f={f_{t-1}}})</script><p>所以构建GBDT树的过程：<br>初始：假定初始的$f_0$ 是把所有的输入都预测为0，那么通过损失函数对f的导数的解析式可以得到负梯度的方程$- \left. \frac{dL}{df} \right|_{f={f_0}}$ ,_ 输入$f_{0}$ 就是初始cart树预测的结果（也就是0）,<br>构建第二棵树： 在上一步的基础上计算得到了负梯度，将负梯度作为新的label ,按照cart 树的构造方法，得到第二棵树，并为每个叶子节点确定输出的值（后面介绍）。然后更新下一个负梯度$- \left. \frac{dL}{df} \right|_{f={f_1}}$ ,_ 其中$f_1$ 是这第二棵树的预测结果。用新的到的负梯度作为新的label ,<br>如此迭代下去……<br><strong>通过导数的计算已经包含了L的信息 也就是原始label 的信息。</strong><br>在来说一下误差和负梯度的问题（这里的误差是只真实y与预测的$\hat y$ 的差的绝对值 ），当L损失函数为均方误差时，L对f 的导数就是这个误差，所以用mse 作为损失函数的时候，每次更新的负梯度就是求这棵树对$x_i$ 的预测与这棵树的输入 label 的差的绝对值。</p>
+<p> <strong>针对分类问题也是一样的，二分类问题可以看作是对于每一个类别概率的回归，每个叶子节点的值代表一个连续值，通过类似sigmoid转化成概率，此时对于目标函数一般使用对数似然损失函数$y\epsilon \{-1,1\}$</strong></p>
+<script type="math/tex; mode=display">L(y,f(x))=log(1+exp(-yf(x)))</script><p> <strong>多分类 同理 类似softmax</strong><br> <strong>用一阶段泰勒展开式，更新参数或者方程，就是沿着负梯度更新，二阶泰勒展开呢 就是用负梯度除以二阶导数的方向更新，GBDT只用了一阶，Xgboost用的二阶</strong></p>
+ <img src="/2019/08/17/boosting/niudun.png">
+<h2 id="如何确定每个叶子节点的值"><a href="#如何确定每个叶子节点的值" class="headerlink" title="如何确定每个叶子节点的值"></a>如何确定每个叶子节点的值</h2><p> 找到一个值c，当这个叶子节点中的所有样本都被预测为c时，对于该叶子节点中的每个样本x，计算其误差，使得误差的累加和最小，那么c为这个叶子节点的值。</p>
+<h2 id="如何正则（权重）"><a href="#如何正则（权重）" class="headerlink" title="如何正则（权重）"></a>如何正则（权重）</h2><p><strong>加入正则项：对于个树，给一个权重v（0到1之间）, 预测结果要乘以v ，才是该树的最终预测结果。</strong><br> 抽样，确定超参数（树的深度等参数）<br> cart树的剪枝等</p>
+  <img src="/2019/08/17/boosting/gbdt.png" title="（算法流程）">
+<h2 id="GBDT与随机森林"><a href="#GBDT与随机森林" class="headerlink" title="GBDT与随机森林"></a>GBDT与随机森林</h2><ol>
+<li>组成随机森林的树可以是分类树，也可以是回归树；而GBDT只能由回归树组成。</li>
+<li>组成随机森林的树可以并行生成；而GBDT只能是串行生成。</li>
+<li>对于最终的输出结果而言，随机森林采用多数投票等；而GBDT则是将所有结果累加起来，或者加权累加起来。</li>
+<li>随机森林对异常值不敏感；GBDT对异常值非常敏感。原因是当前的错误会延续给下一棵树。 </li>
+<li>随机森林对训练集一视同仁；GBDT是基于权值的弱分类器的集成。</li>
+<li>随机森林是通过减少模型方差提高性能；GBDT是通过减少模型偏差提高性能。</li>
+<li>RF不需要进行数据预处理，即特征归一化。而GBDT则需要进行特征归一化。</li>
+</ol>
+<p><strong>为什么RF的树深度比GBDT深很多</strong><br>对于Bagging算法来说，由于我们会并行地训练很多不同的分类器的目的就是降低这个方差(variance) ,因为采用了相互独立的基分类器多了以后，h的值自然就会靠近.所以对于每个基分类器来说，目标就是如何降低这个偏差（bias),所以我们会采用深度很深甚至不剪枝的决策树。</p>
+<p>对于Boosting来说，每一步我们都会在上一轮的基础上更加拟合原数据，所以可以保证偏差（bias）,所以对于每个基分类器来说，问题就在于如何选择variance更小的分类器，即更简单的分类器，所以我们选择了深度很浅的决策树</p>
+<h1 id="xgboost"><a href="#xgboost" class="headerlink" title="xgboost"></a>xgboost</h1><p>思路与GBDT类似，可以说是在基础上更新的新方法，加入了正则，二阶泰勒展开信息等，具体差别后面总结。</p>
+<h2 id="目标函数与正则项"><a href="#目标函数与正则项" class="headerlink" title="目标函数与正则项"></a>目标函数与正则项</h2><p>loss 函数由二阶泰勒展开近似代替，<br><img src="/2019/08/17/boosting/loss.png"><br><img src="/2019/08/17/boosting/loss2.png"><br><img src="/2019/08/17/boosting/loss3.png"><br>通过求目标函数（二次函数）的极值点的到$L $ 的最小值，以此作为打分函数的依据（分裂节点的依据）。</p>
+<p>在GBDT原有的loss 的基础上，增加了正则项：<br><img src="/2019/08/17/boosting/xgloss.png"></p>
+<h2 id="算法流程"><a href="#算法流程" class="headerlink" title="算法流程"></a>算法流程</h2><p>与GBDT一样，不同点是算法的目标函数，以及分裂每个节点的方法。<br>和传统的boosting tree模型一样，xgboost的提升模型也是采用的残差（或梯度负方向），不同的是分裂结点选取的时候不一定是最小平方损失。<br><img src="/2019/08/17/boosting/xgboost.png"></p>
+<h2 id="对于稀疏值，缺失值"><a href="#对于稀疏值，缺失值" class="headerlink" title="对于稀疏值，缺失值"></a>对于稀疏值，缺失值</h2><p>通过分别计算假设其属于$G_L$ 或者属于$G_R$ 选择最合适的。</p>
+<h2 id="GBDT-与-xgboost"><a href="#GBDT-与-xgboost" class="headerlink" title="GBDT 与 xgboost"></a>GBDT 与 xgboost</h2><p>xgboost 支持自定义目标函数 只要二阶可导就行。</p>
+<h2 id="怎么防过拟合"><a href="#怎么防过拟合" class="headerlink" title="怎么防过拟合"></a>怎么防过拟合</h2><p>目标函数中的正则项，行抽样，列抽样，shrinkage（在一个树结束的结果上乘以一个0-1之间的数）</p>
+<h2 id="xgboost与深度学习对比"><a href="#xgboost与深度学习对比" class="headerlink" title="xgboost与深度学习对比"></a>xgboost与深度学习对比</h2><p>同的机器学习模型适用于不同类型的任务。深度神经网络通过对时空位置建模，能够很好地捕获图像、语音、文本等高维数据。而基于树模型的XGBoost则能很好地处理表格数据，同时还拥有一些深度神经网络所没有的特性（如：模型的可解释性、输入数据的不变性、更易于调参等）。</p>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+  </entry>
+  <entry>
     <title>C—的小问题</title>
     <url>/2019/08/05/C-%E9%81%87%E8%A7%81%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<p>介绍了 string 与char int char* 的转化，for 枚举类型，和INT_MAX</p>
@@ -111,51 +156,6 @@
       </categories>
   </entry>
   <entry>
-    <title>GBDT与XGboost</title>
-    <url>/2019/08/17/boosting/</url>
-    <content><![CDATA[<p>对这两个算法进行简单的记录<br><a id="more"></a></p>
-<h1 id="GBDT"><a href="#GBDT" class="headerlink" title="GBDT"></a>GBDT</h1><p>思路： 使用多个cart树，对数据进行拟合，每个树都用来拟合上一步的负梯度（后面解释），最后将每一个cart树的结果累加（加权），得到预测结果。<br> 需要理解的几个问题：</p>
-<ul>
-<li>为什么拟合负梯度，和拟合误差一样吗？（回归问题）</li>
-<li>如何拟合负梯度</li>
-<li>如何确定每个叶子节点的值</li>
-<li>加权求和是什么意思</li>
-<li>正则化的问题</li>
-</ul>
-<h2 id="拟合负梯度（解决前两个问题）"><a href="#拟合负梯度（解决前两个问题）" class="headerlink" title="拟合负梯度（解决前两个问题）"></a>拟合负梯度（解决前两个问题）</h2><p>首先对于一个函数来说，沿着负梯度方向会让函数值降低，对于一般问题，损失函数L是关于参数$\theta$ 的函数，一般做法是对参数求导，然后更新参数，得到更好的决策函数，进而降低误差。对于GBDT来说我们提升的不是参数$\theta$ 而是决策函数本身（换句话说参数就是树本身），具体来说。针对损失函数的：<br>一般方法的损失更新：</p>
-<script type="math/tex; mode=display">L(y_i, f(x_i,\theta^{[i]})=L(y_i, f(x_i,\theta^{[i-1]} - \left. \frac{dL}{d\theta} \right| _{\theta={\theta^{[i-1]}}})</script><p>对于GBDT的损失更新：</p>
-<script type="math/tex; mode=display">L(y_i, f_t(x_i)=L(y_i, f_{t-1}(x_i) - \left. \frac{dL}{df} \right|_{f={f_{t-1}}})</script><p>所以构建GBDT树的过程：<br>初始：假定初始的$f_0$ 是把所有的输入都预测为0，那么通过损失函数对f的导数的解析式可以得到负梯度的方程$- \left. \frac{dL}{df} \right|_{f={f_0}}$ ,_ 输入$f_{0}$ 就是初始cart树预测的结果（也就是0）,<br>构建第二棵树： 在上一步的基础上计算得到了负梯度，将负梯度作为新的label ,按照cart 树的构造方法，得到第二棵树，并为每个叶子节点确定输出的值（后面介绍）。然后更新下一个负梯度$- \left. \frac{dL}{df} \right|_{f={f_1}}$ ,_ 其中$f_1$ 是这第二棵树的预测结果。用新的到的负梯度作为新的label ,<br>如此迭代下去……<br><strong>通过导数的计算已经包含了L的信息 也就是原始label 的信息。</strong><br>在来说一下误差和负梯度的问题（这里的误差是只真实y与预测的$\hat y$ 的差的绝对值 ），当L损失函数为均方误差时，L对f 的导数就是这个误差，所以用mse 作为损失函数的时候，每次更新的负梯度就是求这棵树对$x_i$ 的预测与这棵树的输入 label 的差的绝对值。</p>
-<p> <strong>针对分类问题也是一样的，二分类问题可以看作是对于每一个类别概率的回归，每个叶子节点的值代表一个连续值，通过类似sigmoid转化成概率，此时对于目标函数一般使用对数似然损失函数$y\epsilon \{-1,1\}$</strong></p>
-<script type="math/tex; mode=display">L(y,f(x))=log(1+exp(-yf(x)))</script><p> <strong>多分类 同理 类似softmax</strong><br> <strong>用一阶段泰勒展开式，更新参数或者方程，就是沿着负梯度更新，二阶泰勒展开呢 就是用负梯度除以二阶导数的方向更新，GBDT只用了一阶，Xgboost用的二阶</strong></p>
- <img src="/2019/08/17/boosting/niudun.png">
-<h2 id="如何确定每个叶子节点的值"><a href="#如何确定每个叶子节点的值" class="headerlink" title="如何确定每个叶子节点的值"></a>如何确定每个叶子节点的值</h2><p> 找到一个值c，当这个叶子节点中的所有样本都被预测为c时，对于该叶子节点中的每个样本x，计算其误差，使得误差的累加和最小，那么c为这个叶子节点的值。</p>
-<h2 id="如何正则（权重）"><a href="#如何正则（权重）" class="headerlink" title="如何正则（权重）"></a>如何正则（权重）</h2><p><strong>加入正则项：对于个树，给一个权重v（0到1之间）, 预测结果要乘以v ，才是该树的最终预测结果。</strong><br> 抽样，确定超参数（树的深度等参数）<br> cart树的剪枝等</p>
-  <img src="/2019/08/17/boosting/gbdt.png" title="（算法流程）">
-<h2 id="GBDT与随机森林"><a href="#GBDT与随机森林" class="headerlink" title="GBDT与随机森林"></a>GBDT与随机森林</h2><ol>
-<li>组成随机森林的树可以是分类树，也可以是回归树；而GBDT只能由回归树组成。</li>
-<li>组成随机森林的树可以并行生成；而GBDT只能是串行生成。</li>
-<li>对于最终的输出结果而言，随机森林采用多数投票等；而GBDT则是将所有结果累加起来，或者加权累加起来。</li>
-<li>随机森林对异常值不敏感；GBDT对异常值非常敏感。原因是当前的错误会延续给下一棵树。 </li>
-<li>随机森林对训练集一视同仁；GBDT是基于权值的弱分类器的集成。</li>
-<li>随机森林是通过减少模型方差提高性能；GBDT是通过减少模型偏差提高性能。</li>
-<li>RF不需要进行数据预处理，即特征归一化。而GBDT则需要进行特征归一化。</li>
-</ol>
-<p><strong>为什么RF的树深度比GBDT深很多</strong><br>对于Bagging算法来说，由于我们会并行地训练很多不同的分类器的目的就是降低这个方差(variance) ,因为采用了相互独立的基分类器多了以后，h的值自然就会靠近.所以对于每个基分类器来说，目标就是如何降低这个偏差（bias),所以我们会采用深度很深甚至不剪枝的决策树。</p>
-<p>对于Boosting来说，每一步我们都会在上一轮的基础上更加拟合原数据，所以可以保证偏差（bias）,所以对于每个基分类器来说，问题就在于如何选择variance更小的分类器，即更简单的分类器，所以我们选择了深度很浅的决策树</p>
-<h1 id="xgboost"><a href="#xgboost" class="headerlink" title="xgboost"></a>xgboost</h1><p>思路与GBDT类似，可以说是在基础上更新的新方法，加入了正则，二阶泰勒展开信息等，具体差别后面总结。</p>
-<h2 id="目标函数与正则项"><a href="#目标函数与正则项" class="headerlink" title="目标函数与正则项"></a>目标函数与正则项</h2><p>loss 函数由二阶泰勒展开近似代替，<br><img src="/2019/08/17/boosting/loss.png"><br><img src="/2019/08/17/boosting/loss2.png"><br><img src="/2019/08/17/boosting/loss3.png"><br>通过求目标函数（二次函数）的极值点的到$L $ 的最小值，以此作为打分函数的依据（分裂节点的依据）。</p>
-<p>在GBDT原有的loss 的基础上，增加了正则项：<br><img src="/2019/08/17/boosting/xgloss.png"></p>
-<h2 id="算法流程"><a href="#算法流程" class="headerlink" title="算法流程"></a>算法流程</h2><p>与GBDT一样，不同点是算法的目标函数，以及分裂每个节点的方法。<br>和传统的boosting tree模型一样，xgboost的提升模型也是采用的残差（或梯度负方向），不同的是分裂结点选取的时候不一定是最小平方损失。<br><img src="/2019/08/17/boosting/xgboost.png"></p>
-<h2 id="对于稀疏值，缺失值"><a href="#对于稀疏值，缺失值" class="headerlink" title="对于稀疏值，缺失值"></a>对于稀疏值，缺失值</h2><p>通过分别计算假设其属于$G_L$ 或者属于$G_R$ 选择最合适的。</p>
-<h2 id="GBDT-与-xgboost"><a href="#GBDT-与-xgboost" class="headerlink" title="GBDT 与 xgboost"></a>GBDT 与 xgboost</h2><p>xgboost 支持自定义目标函数 只要二阶可导就行。</p>
-<h2 id="怎么防过拟合"><a href="#怎么防过拟合" class="headerlink" title="怎么防过拟合"></a>怎么防过拟合</h2><p>目标函数中的正则项，行抽样，列抽样，shrinkage（在一个树结束的结果上乘以一个0-1之间的数）</p>
-<h2 id="xgboost与深度学习对比"><a href="#xgboost与深度学习对比" class="headerlink" title="xgboost与深度学习对比"></a>xgboost与深度学习对比</h2><p>同的机器学习模型适用于不同类型的任务。深度神经网络通过对时空位置建模，能够很好地捕获图像、语音、文本等高维数据。而基于树模型的XGBoost则能很好地处理表格数据，同时还拥有一些深度神经网络所没有的特性（如：模型的可解释性、输入数据的不变性、更易于调参等）。</p>
-]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-  </entry>
-  <entry>
     <title>xgboost</title>
     <url>/2019/09/03/xgboost/</url>
     <content><![CDATA[<p>xgboost 节点值的选择与分裂</p>
@@ -170,6 +170,32 @@
 ]]></content>
       <categories>
         <category>true</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>动态规划</title>
+    <url>/2019/08/06/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</url>
+    <content><![CDATA[<p>应用动态规划解决队列问题<br><a id="more"></a></p>
+<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><blockquote>
+<p>计算最少出列多少位同学，使得剩下的同学排成合唱队形说明：N位同学站成一排，音乐老师要请其中的(N-K)位同学出列，使得剩下的K位同学排成合唱队形。<br>合唱队形是指这样的一种队形：设K位同学从左到右依次编号为1，2…，K，他们的身高分别为T1，T2，…，TK，   则他们的身高满足存在i（1&lt;=i&lt;=K）使得T1<t2<......<ti-1<ti>Ti+1&gt;……&gt;TK。<br>你的任务是，已知所有N位同学的身高，计算最少需要几位同学出列，可以使得剩下的同学排成合唱队形。</t2<......<ti-1<ti></p>
+</blockquote>
+<p>示例1</p>
+<blockquote>
+<p>8<br>186 186 150 200 160 130 197 200</p>
+</blockquote>
+<p>输出</p>
+<blockquote>
+<p>4</p>
+</blockquote>
+<h3 id="求解思路"><a href="#求解思路" class="headerlink" title="求解思路"></a>求解思路</h3><ol>
+<li>通过动态规划求解每个字符结尾的最大递增子字符串的长度，</li>
+<li>再反转数组，</li>
+<li>按照 1.步骤再进行一次</li>
+<li>两次叠加最大值减一即为最后队列的长度<br>代码：<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; dp(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;input,<span class="keyword">int</span> n)&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; list_(n,<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j=i<span class="number">-1</span>;j&gt;=<span class="number">0</span>;j--)&#123;</span><br><span class="line">                <span class="keyword">if</span>(input[i]&gt;input[j])</span><br><span class="line">                    list_[i]=max(list_[i],list_[j]+<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">return</span> list_;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n;</span><br><span class="line">    <span class="keyword">while</span>(<span class="built_in">cin</span>&gt;&gt;n)&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; input(n);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">            <span class="built_in">cin</span>&gt;&gt;input[i];</span><br><span class="line">        &#125;</span><br><span class="line">     <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; front = dp(input,n);</span><br><span class="line">     reverse(input.begin(),input.end());</span><br><span class="line">     <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; back = dp(input, n);</span><br><span class="line">     <span class="keyword">int</span> max_ = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">            <span class="keyword">int</span> temp =front[i]+back[n-i<span class="number">-1</span>];</span><br><span class="line">             <span class="keyword">if</span>(temp&gt;max_) max_=temp;</span><br><span class="line">     &#125;    </span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;(n-(max_<span class="number">-1</span>))&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">     &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
       </categories>
   </entry>
   <entry>
@@ -203,32 +229,6 @@
 ]]></content>
       <categories>
         <category>机器学习</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>动态规划</title>
-    <url>/2019/08/06/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</url>
-    <content><![CDATA[<p>应用动态规划解决队列问题<br><a id="more"></a></p>
-<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><blockquote>
-<p>计算最少出列多少位同学，使得剩下的同学排成合唱队形说明：N位同学站成一排，音乐老师要请其中的(N-K)位同学出列，使得剩下的K位同学排成合唱队形。<br>合唱队形是指这样的一种队形：设K位同学从左到右依次编号为1，2…，K，他们的身高分别为T1，T2，…，TK，   则他们的身高满足存在i（1&lt;=i&lt;=K）使得T1<t2<......<ti-1<ti>Ti+1&gt;……&gt;TK。<br>你的任务是，已知所有N位同学的身高，计算最少需要几位同学出列，可以使得剩下的同学排成合唱队形。</t2<......<ti-1<ti></p>
-</blockquote>
-<p>示例1</p>
-<blockquote>
-<p>8<br>186 186 150 200 160 130 197 200</p>
-</blockquote>
-<p>输出</p>
-<blockquote>
-<p>4</p>
-</blockquote>
-<h3 id="求解思路"><a href="#求解思路" class="headerlink" title="求解思路"></a>求解思路</h3><ol>
-<li>通过动态规划求解每个字符结尾的最大递增子字符串的长度，</li>
-<li>再反转数组，</li>
-<li>按照 1.步骤再进行一次</li>
-<li>两次叠加最大值减一即为最后队列的长度<br>代码：<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; dp(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;input,<span class="keyword">int</span> n)&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; list_(n,<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j=i<span class="number">-1</span>;j&gt;=<span class="number">0</span>;j--)&#123;</span><br><span class="line">                <span class="keyword">if</span>(input[i]&gt;input[j])</span><br><span class="line">                    list_[i]=max(list_[i],list_[j]+<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">return</span> list_;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n;</span><br><span class="line">    <span class="keyword">while</span>(<span class="built_in">cin</span>&gt;&gt;n)&#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; input(n);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">            <span class="built_in">cin</span>&gt;&gt;input[i];</span><br><span class="line">        &#125;</span><br><span class="line">     <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; front = dp(input,n);</span><br><span class="line">     reverse(input.begin(),input.end());</span><br><span class="line">     <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; back = dp(input, n);</span><br><span class="line">     <span class="keyword">int</span> max_ = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">            <span class="keyword">int</span> temp =front[i]+back[n-i<span class="number">-1</span>];</span><br><span class="line">             <span class="keyword">if</span>(temp&gt;max_) max_=temp;</span><br><span class="line">     &#125;    </span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;(n-(max_<span class="number">-1</span>))&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">     &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ol>
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
       </categories>
   </entry>
   <entry>
